@@ -39,6 +39,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,10 +66,8 @@ fun SlokScreen(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                strokeCap = StrokeCap.Round
-            )
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
+            LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
         }
     } else {
         Scaffold(

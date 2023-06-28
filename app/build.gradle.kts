@@ -90,4 +90,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.0-alpha03")
     implementation("androidx.compose.material3:material3-window-size-class:1.2.0-alpha03")
 
+    // Lottie
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
+
 }

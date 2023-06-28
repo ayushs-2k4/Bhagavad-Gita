@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ayushsinghal.bhagvadgita"
+    namespace = "com.ayushsinghal.bhagavadgita"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ayushsinghal.bhagvadgita"
+        applicationId = "com.ayushsinghal.bhagavadgita"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -28,7 +28,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isShrinkResources = true
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

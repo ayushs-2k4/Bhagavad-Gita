@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Bhagvad Gita"
+rootProject.name = "Bhagavad Gita"
 include(":app")
  

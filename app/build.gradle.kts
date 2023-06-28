@@ -5,16 +5,18 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     kotlin("kapt")
+
+    id("kotlin-parcelize")
 }
 
 android {
     namespace = "com.ayushsinghal.bhagvadgita"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.ayushsinghal.bhagvadgita"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -72,11 +74,19 @@ dependencies {
     debugImplementation(libs.ui.test.manifest)
 
     //RetroFit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     //DaggerHilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-compiler:2.44")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
+
+    implementation("androidx.navigation:navigation-compose:2.6.0")
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+
+    implementation("androidx.compose.material3:material3:1.2.0-alpha03")
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.0-alpha03")
+
 }

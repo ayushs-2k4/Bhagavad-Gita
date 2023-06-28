@@ -3,9 +3,11 @@ package com.ayushsinghal.bhagvadgita.features.slok.data.remote.repository
 import com.ayushsinghal.bhagvadgita.features.slok.data.remote.BhagvadGitaApi
 import com.ayushsinghal.bhagvadgita.features.slok.domain.model.all_chapters.AllChaptersListModel
 import com.ayushsinghal.bhagvadgita.features.slok.domain.model.all_chapters.AllChaptersListModelItem
+import com.ayushsinghal.bhagvadgita.features.slok.domain.model.chapter.ChapterModel
 import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.SlokModel
 import com.ayushsinghal.bhagvadgita.features.slok.domain.repository.BhagvadGitaRepository
 import com.ayushsinghal.bhagvadgita.features.slok.mapper.AllChaptersInfoMappers
+import com.ayushsinghal.bhagvadgita.features.slok.mapper.ChapterMappers
 import com.ayushsinghal.bhagvadgita.features.slok.mapper.SlokMappers
 import retrofit2.Response
 
@@ -62,7 +64,7 @@ class BhagvadGitaRepositoryImpl(
         val allChaptersListModel = AllChaptersListModel()
 
         if (response.isSuccessful && allChaptersInfo != null) {
-            val allChaptersModel = allChaptersInfo.map { allChaptersListDTOItem ->
+            allChaptersInfo.map { allChaptersListDTOItem ->
                 val allChaptersListModelItem = AllChaptersListModelItem(
                     chapter_number = allChaptersListDTOItem.chapter_number,
 //                    meaning = allChaptersListDTOItem.meaning,
@@ -86,5 +88,26 @@ class BhagvadGitaRepositoryImpl(
             return Response.error(500, response.errorBody())
         }
 
+    }
+
+    override suspend fun getChapterInformation(chapterNumber: Int): Response<ChapterModel> {
+        val response = bhagvadGitaApi.getChapterInformation(chapterNumber = chapterNumber)
+
+        val chapterBody = response.body()
+        return if (response.isSuccessful && chapterBody != null) {
+            val chapterModel = ChapterModel(
+                chapter_number = chapterBody.chapter_number,
+                meaning = ChapterMappers.meaningDTOToMeaningModelMapper(chapterBody.meaning),
+                name = chapterBody.name,
+                summary = ChapterMappers.summaryDTOToSummaryModelMapper(chapterBody.summary),
+                translation = chapterBody.translation,
+                transliteration = chapterBody.transliteration,
+                verses_count = chapterBody.verses_count
+            )
+
+            Response.success(chapterModel)
+        } else {
+            Response.error(500, response.errorBody())
+        }
     }
 }

@@ -1,7 +1,8 @@
-package com.ayushsinghal.bhagvadgita.features.slok.presentation.random_slok
+package com.ayushsinghal.bhagvadgita.features.slok.presentation.slok
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayushsinghal.bhagvadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
@@ -11,31 +12,38 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RandomSlokViewModel @Inject constructor(
-    private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl
+class SlokViewModel @Inject constructor(
+    private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
 
-    private val _chapter = mutableStateOf<Int>(1)
-    val chapter: State<Int> = _chapter
+    private val _chapterNumber = mutableStateOf(1)
+    val chapterNumber: State<Int> = _chapterNumber
 
-    private val _verse = mutableStateOf<Int>(1)
-    val verse: State<Int> = _verse
+    private val _verseNumber = mutableStateOf(1)
+    val verseNumber: State<Int> = _verseNumber
 
     init {
+        savedStateHandle.get<Int>("chapter_number")?.let {
+            _chapterNumber.value = it
+        }
+
+        savedStateHandle.get<Int>("verse_number")?.let {
+            _verseNumber.value = it
+        }
+
         getRandomSlok()
-        _chapter.value = 1
-        _verse.value = 1
     }
 
     private val _slok = mutableStateOf<SlokModel?>(null)
     val slok: State<SlokModel?> = _slok
 
-    fun getRandomSlok() {
+    private fun getRandomSlok() {
         viewModelScope.launch {
             val result = bhagvadGitaRepositoryImpl.getSlok(
-                chapter = _chapter.value,
-                verse = _verse.value
+                chapter = _chapterNumber.value,
+                verse = _verseNumber.value
             )
 
             if (result.body() != null) {

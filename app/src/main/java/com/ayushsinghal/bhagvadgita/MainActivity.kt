@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ayushsinghal.bhagvadgita.features.slok.presentation.all_chapters.AllChaptersScreen
 import com.ayushsinghal.bhagvadgita.features.slok.presentation.random_slok.RandomSlokScreen
 import com.ayushsinghal.bhagvadgita.ui.theme.BhagvadGitaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +27,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                    Greeting("Android")
-                    RandomSlokScreen()
+//                    RandomSlokScreen()
+                    AllChaptersScreen()
                 }
             }
         }

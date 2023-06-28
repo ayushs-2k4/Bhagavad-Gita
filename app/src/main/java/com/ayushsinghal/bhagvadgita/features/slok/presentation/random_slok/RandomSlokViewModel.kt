@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayushsinghal.bhagvadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
-import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.Slok
+import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.SlokModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,8 +28,8 @@ class RandomSlokViewModel @Inject constructor(
         _verse.value = 1
     }
 
-    private val _slok = mutableStateOf<Slok?>(null)
-    val slok: State<Slok?> = _slok
+    private val _slok = mutableStateOf<SlokModel?>(null)
+    val slok: State<SlokModel?> = _slok
 
     fun getRandomSlok() {
         viewModelScope.launch {

@@ -43,7 +43,7 @@ import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.TejModel
 import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.VallabhModel
 import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.VenkatModel
 
-object Mappers {
+object SlokMappers {
 
     fun abhinavDTOToAbhinavModelMapper(abhinavDTO: Abhinav): AbhinavModel {
         return AbhinavModel(

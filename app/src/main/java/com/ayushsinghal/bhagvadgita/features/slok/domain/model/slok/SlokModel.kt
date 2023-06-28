@@ -1,6 +1,6 @@
 package com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok
 
-data class Slok(
+data class SlokModel(
     val _id: String,
     val abhinav: AbhinavModel,
     val adi: AdiModel,

@@ -1,56 +1,90 @@
 package com.ayushsinghal.bhagvadgita.features.slok.data.remote.repository
 
 import com.ayushsinghal.bhagvadgita.features.slok.data.remote.BhagvadGitaApi
-import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.Slok
+import com.ayushsinghal.bhagvadgita.features.slok.domain.model.all_chapters.AllChaptersListModel
+import com.ayushsinghal.bhagvadgita.features.slok.domain.model.all_chapters.AllChaptersListModelItem
+import com.ayushsinghal.bhagvadgita.features.slok.domain.model.slok.SlokModel
 import com.ayushsinghal.bhagvadgita.features.slok.domain.repository.BhagvadGitaRepository
-import com.ayushsinghal.bhagvadgita.features.slok.mapper.Mappers
+import com.ayushsinghal.bhagvadgita.features.slok.mapper.AllChaptersInfoMappers
+import com.ayushsinghal.bhagvadgita.features.slok.mapper.SlokMappers
 import retrofit2.Response
 
 class BhagvadGitaRepositoryImpl(
     private val bhagvadGitaApi: BhagvadGitaApi
 ) : BhagvadGitaRepository {
-    override suspend fun getSlok(chapter: Int, verse: Int): Response<Slok> {
+    override suspend fun getSlok(chapter: Int, verse: Int): Response<SlokModel> {
         val response = bhagvadGitaApi.getSlok(
             chapter = chapter,
             verse = verse
         )
         val mySlokDTO = response.body()
         if (response.isSuccessful && mySlokDTO != null) {
-            val slok = Slok(
+            val slok = SlokModel(
                 _id = mySlokDTO._id,
-                abhinav = Mappers.abhinavDTOToAbhinavModelMapper(mySlokDTO.abhinav),
-                adi = Mappers.adiDTOToAdiModelMapper(mySlokDTO.adi),
-                anand = Mappers.anandDTOToAnandModelMapper(mySlokDTO.anand),
+                abhinav = SlokMappers.abhinavDTOToAbhinavModelMapper(mySlokDTO.abhinav),
+                adi = SlokMappers.adiDTOToAdiModelMapper(mySlokDTO.adi),
+                anand = SlokMappers.anandDTOToAnandModelMapper(mySlokDTO.anand),
                 chapter = mySlokDTO.chapter,
-                chinmay = Mappers.chinmayDTOToChinmayModelMapper(mySlokDTO.chinmay),
-                dhan = Mappers.dhanDTOToDhanModelMapper(mySlokDTO.dhan),
-                gambir = Mappers.gambirDTOToGambirModelMapper(mySlokDTO.gambir),
-                jaya = Mappers.jayaDTOToJayaModelMapper(mySlokDTO.jaya),
-                madhav = Mappers.madhavDTOToMadhavModelMapper(mySlokDTO.madhav),
-                ms = Mappers.msDTOToMsModelMapper(mySlokDTO.ms),
-                neel = Mappers.neelDTOToNeelModelMapper(mySlokDTO.neel),
-                purohit = Mappers.purohitDTOToPurohitModelMapper(mySlokDTO.purohit),
-                puru = Mappers.puruDTOToPuruModelMapper(mySlokDTO.puru),
-                raman = Mappers.ramanDTOToRamanModelMapper(mySlokDTO.raman),
-                rams = Mappers.ramsDTOToRamsModelMapper(mySlokDTO.rams),
-                san = Mappers.sanDTOToSanModelMapper(mySlokDTO.san),
-                sankar = Mappers.sankarDTOToSankarModelMapper(mySlokDTO.sankar),
-                siva = Mappers.sivaDTOToSivaModelMapper(mySlokDTO.siva),
+                chinmay = SlokMappers.chinmayDTOToChinmayModelMapper(mySlokDTO.chinmay),
+                dhan = SlokMappers.dhanDTOToDhanModelMapper(mySlokDTO.dhan),
+                gambir = SlokMappers.gambirDTOToGambirModelMapper(mySlokDTO.gambir),
+                jaya = SlokMappers.jayaDTOToJayaModelMapper(mySlokDTO.jaya),
+                madhav = SlokMappers.madhavDTOToMadhavModelMapper(mySlokDTO.madhav),
+                ms = SlokMappers.msDTOToMsModelMapper(mySlokDTO.ms),
+                neel = SlokMappers.neelDTOToNeelModelMapper(mySlokDTO.neel),
+                purohit = SlokMappers.purohitDTOToPurohitModelMapper(mySlokDTO.purohit),
+                puru = SlokMappers.puruDTOToPuruModelMapper(mySlokDTO.puru),
+                raman = SlokMappers.ramanDTOToRamanModelMapper(mySlokDTO.raman),
+                rams = SlokMappers.ramsDTOToRamsModelMapper(mySlokDTO.rams),
+                san = SlokMappers.sanDTOToSanModelMapper(mySlokDTO.san),
+                sankar = SlokMappers.sankarDTOToSankarModelMapper(mySlokDTO.sankar),
+                siva = SlokMappers.sivaDTOToSivaModelMapper(mySlokDTO.siva),
                 slok = mySlokDTO.slok,
-                srid = Mappers.sridDTOToSridModelMapper(mySlokDTO.srid),
-                tej = Mappers.tejDTOToTejModelMapper(mySlokDTO.tej),
+                srid = SlokMappers.sridDTOToSridModelMapper(mySlokDTO.srid),
+                tej = SlokMappers.tejDTOToTejModelMapper(mySlokDTO.tej),
                 transliteration = mySlokDTO.transliteration,
-                vallabh = Mappers.vallabhDTOToVallabhModelMapper(mySlokDTO.vallabh),
-                venkat = Mappers.venkatDTOToVenkatModelMapper(mySlokDTO.venkat),
+                vallabh = SlokMappers.vallabhDTOToVallabhModelMapper(mySlokDTO.vallabh),
+                venkat = SlokMappers.venkatDTOToVenkatModelMapper(mySlokDTO.venkat),
                 verse = mySlokDTO.verse
             )
 
             return Response.success(slok)
         } else {
-            val errorResponse = ErrorResponse("An error occurred")
             return Response.error(500, response.errorBody())
         }
     }
-}
 
-data class ErrorResponse(val message: String)
+    override suspend fun getAllChapterInformation(): Response<AllChaptersListModel> {
+        val response = bhagvadGitaApi.getAllChapterInformation()
+
+        val allChaptersInfo = response.body()
+
+        val allChaptersListModel = AllChaptersListModel()
+
+        if (response.isSuccessful && allChaptersInfo != null) {
+            val allChaptersModel = allChaptersInfo.map { allChaptersListDTOItem ->
+                val allChaptersListModelItem = AllChaptersListModelItem(
+                    chapter_number = allChaptersListDTOItem.chapter_number,
+//                    meaning = allChaptersListDTOItem.meaning,
+                    meaning = AllChaptersInfoMappers.meaningDTOToMeaningModelMapper(
+                        allChaptersListDTOItem.meaning
+                    ),
+                    name = allChaptersListDTOItem.name,
+                    summary = AllChaptersInfoMappers.summaryDTOToSummaryModelMapper(
+                        allChaptersListDTOItem.summary
+                    ),
+                    translation = allChaptersListDTOItem.translation,
+                    transliteration = allChaptersListDTOItem.transliteration,
+                    verses_count = allChaptersListDTOItem.verses_count
+                )
+
+                allChaptersListModel.add(element = allChaptersListModelItem)
+            }
+
+            return Response.success(allChaptersListModel)
+        } else {
+            return Response.error(500, response.errorBody())
+        }
+
+    }
+}

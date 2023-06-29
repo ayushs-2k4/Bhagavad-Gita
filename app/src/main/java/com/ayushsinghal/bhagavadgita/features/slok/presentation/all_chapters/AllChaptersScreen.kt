@@ -1,7 +1,6 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,13 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,8 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -49,10 +44,11 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
+import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
 import com.ayushsinghal.bhagavadgita.features.slok.domain.ChapterInfo
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 
-val TAG = "myRecognisingTAG"
+const val TAG = "myRecognisingTAG"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +65,8 @@ fun AllChaptersScreen(
 
     val allChaptersList = allChaptersScreenViewModel.allChaptersList
 
+    val isInternetConnected = allChaptersScreenViewModel.isInternetConnected
+
     val chapterInfoCardList = allChaptersList.value.map {
         ChapterInfo(
             chapterNumber = it.chapter_number,
@@ -82,42 +80,46 @@ fun AllChaptersScreen(
         )
     }
 
-    if (chapterInfoCardList.isEmpty()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
-            LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
-        }
-    } else {
-        Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                TopBar(
-                    scrollBehavior = scrollBehavior,
-                    isEnglishSelected = isEnglishSelected,
-                    onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
-                )
-            }
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier.padding(paddingValues)
+    if (isInternetConnected.value) {
+        if (chapterInfoCardList.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(chapterInfoCardList)
-                {
-                    ChapterInfoCard(
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
+                LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
+            }
+        } else {
+            Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                    TopBar(
+                        scrollBehavior = scrollBehavior,
                         isEnglishSelected = isEnglishSelected,
-                        chapterInfo = it,
-                        onClick = { chapterNumber ->
+                        onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
+                    )
+                }
+            ) { paddingValues ->
+                LazyColumn(
+                    modifier = Modifier.padding(paddingValues)
+                ) {
+                    items(chapterInfoCardList)
+                    {
+                        ChapterInfoCard(
+                            isEnglishSelected = isEnglishSelected,
+                            chapterInfo = it,
+                            onClick = { chapterNumber ->
 //                        Log.d(TAG, "Clicked on chapter: ${chapterNumber - 1}")
-                            navController.navigate(
-                                route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}"
-                            )
-                        })
+                                navController.navigate(
+                                    route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}"
+                                )
+                            })
+                    }
                 }
             }
         }
+    } else {
+        NoInternetScreen(onClickTryAgain = { allChaptersScreenViewModel.checkInternetAndGetData() })
     }
 }
 
@@ -153,7 +155,7 @@ fun ChapterInfoCard(
     chapterInfo: ChapterInfo,
     onClick: (Int) -> Unit
 ) {
-    Card(
+    OutlinedCard(
         modifier = modifier
             .padding(10.dp)
             .clip(MaterialTheme.shapes.medium)
@@ -162,12 +164,6 @@ fun ChapterInfoCard(
                 indication = rememberRipple(),
                 onClick = { onClick(chapterInfo.chapterNumber) },
             )
-            .border(
-                width = 1.dp,
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.primary
-            ),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),

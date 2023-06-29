@@ -14,11 +14,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,10 +31,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +41,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
+import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,72 +56,78 @@ fun SlokScreen(
         mutableStateOf(false)
     }
 
+    val isInternetConnected = slokViewModel.isInternetConnected
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    if (slok.value == null) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
-            LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
-        }
-    } else {
-        Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = {
-                TopBar(
-                    scrollBehavior = scrollBehavior,
-                    title = "अध्याय ${slok.value!!.chapter} श्लोक ${slok.value!!.verse}",
-                    onBackClick = { navController.navigateUp() },
-                    onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
-                )
-            }
-        ) { paddingValues ->
-
+    if (isInternetConnected.value) {
+        if (slok.value == null) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues = paddingValues)
-                    .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TextHeadingDesign(
-                    modifier = Modifier.padding(vertical = 20.dp),
-                    text = if (isEnglishSelected) "Verse" else "श्लोक",
-                    leftImage = R.drawable.left_design,
-                    rightImage = R.drawable.right_design
-                )
+                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
+                LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
+            }
+        } else {
+            Scaffold(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                topBar = {
+                    TopBar(
+                        scrollBehavior = scrollBehavior,
+                        title = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}",
+                        onBackClick = { navController.navigateUp() },
+                        onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
+                    )
+                }
+            ) { paddingValues ->
 
-                Text(text = slok.value!!.slok)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues = paddingValues)
+                        .padding(horizontal = 20.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TextHeadingDesign(
+                        modifier = Modifier.padding(vertical = 20.dp),
+                        text = if (isEnglishSelected) "Verse" else "श्लोक",
+                        leftImage = R.drawable.left_design,
+                        rightImage = R.drawable.right_design
+                    )
 
-                Spacer(modifier = Modifier.height(50.dp))
+                    Text(text = slok.value!!.slok)
 
-                TextHeadingDesign(
-                    modifier = Modifier.padding(vertical = 20.dp),
-                    text = if (isEnglishSelected) "Translation" else "अनुवाद",
-                    leftImage = R.drawable.left_design,
-                    rightImage = R.drawable.right_design
-                )
+                    Spacer(modifier = Modifier.height(50.dp))
 
-                Text(text = if (isEnglishSelected) slok.value!!.siva.et else slok.value!!.rams.ht)
+                    TextHeadingDesign(
+                        modifier = Modifier.padding(vertical = 20.dp),
+                        text = if (isEnglishSelected) "Translation" else "अनुवाद",
+                        leftImage = R.drawable.left_design,
+                        rightImage = R.drawable.right_design
+                    )
 
-                Spacer(modifier = Modifier.height(50.dp))
+                    Text(text = if (isEnglishSelected) slok.value!!.siva.et else slok.value!!.rams.ht)
 
-                TextHeadingDesign(
-                    modifier = Modifier.padding(vertical = 20.dp),
-                    text = if (isEnglishSelected) "Explanation" else "व्याख्या",
-                    leftImage = R.drawable.left_design,
-                    rightImage = R.drawable.right_design
-                )
+                    Spacer(modifier = Modifier.height(50.dp))
 
-                Text(text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc)
+                    TextHeadingDesign(
+                        modifier = Modifier.padding(vertical = 20.dp),
+                        text = if (isEnglishSelected) "Explanation" else "व्याख्या",
+                        leftImage = R.drawable.left_design,
+                        rightImage = R.drawable.right_design
+                    )
 
+                    Text(text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc)
+
+                }
             }
         }
+    } else {
+        NoInternetScreen(onClickTryAgain = { slokViewModel.checkInternetAndGetData() })
     }
 }
 

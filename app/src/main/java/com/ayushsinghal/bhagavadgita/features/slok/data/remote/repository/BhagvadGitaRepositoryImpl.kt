@@ -1,5 +1,6 @@
 package com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository
 
+import android.app.Application
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagvadGitaApi
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.all_chapters.AllChaptersListModel
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.all_chapters.AllChaptersListModelItem

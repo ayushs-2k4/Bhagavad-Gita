@@ -1,21 +1,28 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.slok
 
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ayushsinghal.bhagavadgita.BhagvadGitaApp
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.slok.SlokModel
+import com.ayushsinghal.bhagavadgita.utils.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SlokViewModel @Inject constructor(
+    app: Application,
     private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
-    savedStateHandle: SavedStateHandle
-) : ViewModel() {
+    savedStateHandle: SavedStateHandle,
+) : AndroidViewModel(app) {
 
 
     private val _chapterNumber = mutableStateOf(1)
@@ -23,6 +30,9 @@ class SlokViewModel @Inject constructor(
 
     private val _verseNumber = mutableStateOf(1)
     val verseNumber: State<Int> = _verseNumber
+
+    private val _isInternetConnected = mutableStateOf<Boolean>(false)
+    val isInternetConnected: State<Boolean> = _isInternetConnected
 
     init {
         savedStateHandle.get<Int>("chapter_number")?.let {
@@ -33,7 +43,16 @@ class SlokViewModel @Inject constructor(
             _verseNumber.value = it
         }
 
-        getRandomSlok()
+        checkInternetAndGetData()
+    }
+
+    fun checkInternetAndGetData() {
+        if (NetworkUtils.isInternetAvailable(bhagvadGitaApp = getApplication())) {
+            _isInternetConnected.value = true
+            getRandomSlok()
+        } else {
+            _isInternetConnected.value = false
+        }
     }
 
     private val _slok = mutableStateOf<SlokModel?>(null)

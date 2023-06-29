@@ -41,6 +41,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
+import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,15 +63,7 @@ fun SlokScreen(
 
     if (isInternetConnected.value) {
         if (slok.value == null) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
-                LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
-            }
+            LoadingScreen()
         } else {
             Scaffold(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

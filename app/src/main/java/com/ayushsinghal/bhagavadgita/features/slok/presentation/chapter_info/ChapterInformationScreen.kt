@@ -45,6 +45,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
+import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.TAG
 import com.ayushsinghal.bhagavadgita.navigation.Screen
@@ -64,13 +65,7 @@ fun ChapterInformationScreen(
 
     if (isInternetConnected.value) {
         if (chapterModel == null) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
-                LottieAnimation(composition = composition, iterations = Int.MAX_VALUE)
-            }
+            LoadingScreen()
         } else {
 
             var isEnglishSelected by rememberSaveable {

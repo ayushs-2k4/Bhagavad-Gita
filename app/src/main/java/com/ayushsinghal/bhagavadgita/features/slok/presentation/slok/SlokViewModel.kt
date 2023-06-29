@@ -2,6 +2,7 @@ package com.ayushsinghal.bhagavadgita.features.slok.presentation.slok
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -70,6 +71,16 @@ class SlokViewModel @Inject constructor(
 
                 _slok.value = slokInfo
             }
+        }
+    }
+
+    fun shareSlok(context: Context, content: String) {
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, content)
+            type = "text/plain"
+            val intentChooser = Intent.createChooser(this, "Hi")
+            context.startActivity(intentChooser)
         }
     }
 }

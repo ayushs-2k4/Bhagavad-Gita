@@ -6,7 +6,7 @@ The Bhagavad Gita App is an innovative online application that embodies cutting-
 
 # Features
 
-_**Seamless Browsing:**_ Users can effortlessly navigate through the extensive collection of slokas in the Bhagavad Gita
+_**Seamless Browsing:**_ Users can effortlessly navigate through the extensive collection of slokas in the Bhagavad Gita.
 
 _**Dual Translations:**_ The app provides meticulous translations of each sloka, meticulously rendered in both English and Hindi, thus catering to the diverse linguistic preferences of users.
 

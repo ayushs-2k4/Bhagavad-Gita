@@ -155,7 +155,7 @@ fun TopBar(
 
             IconButton(onClick = { onLanguageChangeButtonClicked() }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.translate),
+                    painter = painterResource(id = R.drawable.translate_hindi_english),
                     contentDescription = "Change Language",
                     modifier = Modifier.size(30.dp)
                 )

@@ -119,7 +119,7 @@ fun AllChaptersScreen(
                                 chapterInfo = chapterInfoCardList[it],
                                 onClick = { chapterNumber ->
                                     navController.navigate(
-                                        route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}"
+                                        route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}&chapter_name_hindi=${chapterInfoCardList[chapterNumber - 1].chapterName}&chapter_name_english=${chapterInfoCardList[chapterNumber - 1].translation}&verse_count=${chapterInfoCardList[chapterNumber - 1].versesCount}"
                                     )
                                 })
                         }
@@ -178,7 +178,8 @@ fun ChapterInfoCard(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 7.dp),
+                .padding(top = 7.dp)
+                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

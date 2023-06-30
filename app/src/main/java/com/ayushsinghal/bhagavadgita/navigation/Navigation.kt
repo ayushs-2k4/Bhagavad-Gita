@@ -26,9 +26,21 @@ fun Navigation() {
         }
 
         composable(
-            route = Screen.ChapterInformationScreen.route + "?chapter_number={chapter_number}",
+            route = Screen.ChapterInformationScreen.route + "?chapter_number={chapter_number}&chapter_name_hindi={chapter_name_hindi}&chapter_name_english={chapter_name_english}&verse_count={verse_count}",
             arguments = listOf(
                 navArgument("chapter_number") {
+                    type = NavType.IntType
+                    nullable = false
+                },
+                navArgument("chapter_name_hindi") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("chapter_name_english") {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument("verse_count") {
                     type = NavType.IntType
                     nullable = false
                 }

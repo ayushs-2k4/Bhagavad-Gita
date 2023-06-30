@@ -24,40 +24,24 @@ class ChapterInformationViewModel @Inject constructor(
 ) : AndroidViewModel(app) {
 
     private val _chapterNumber = mutableStateOf<Int>(-1)
+    val chapterNumber: State<Int> = _chapterNumber
 
-    private val _chapterModel = mutableStateOf<ChapterModel?>(null)
-    val chapterModel: State<ChapterModel?> = _chapterModel
+    private val _chapterNameHindi = mutableStateOf<String>("")
+    val chapterNameHindi: State<String> = _chapterNameHindi
 
-    private val _isInternetConnected = mutableStateOf<Boolean>(false)
-    val isInternetConnected: State<Boolean> = _isInternetConnected
+    private val _chapterNameEnglish = mutableStateOf<String>("")
+    val chapterNameEnglish: State<String> = _chapterNameEnglish
 
+    private val _verseCount = mutableStateOf<Int>(-1)
+    val verseCount: State<Int> = _verseCount
 
     init {
-        savedStateHandle.get<Int>("chapter_number")?.let {
-            _chapterNumber.value = it
-        }
+        savedStateHandle.get<Int>("chapter_number")?.let { _chapterNumber.value = it }
 
-        checkInternetAndGetData()
-    }
+        savedStateHandle.get<Int>("verse_count")?.let { _verseCount.value = it }
 
-    fun checkInternetAndGetData() {
-        if (NetworkUtils.isInternetAvailable(bhagvadGitaApp = getApplication())) {
-            _isInternetConnected.value = true
-            getChapterInformation()
-        } else {
-            _isInternetConnected.value = false
-        }
-    }
+        savedStateHandle.get<String>("chapter_name_hindi")?.let { _chapterNameHindi.value = it }
 
-    private fun getChapterInformation() {
-        viewModelScope.launch {
-            val response = bhagvadGitaRepositoryImpl.getChapterInformation(_chapterNumber.value)
-
-            val chapterInformationBody = response.body()
-
-            if (response.isSuccessful && chapterInformationBody != null) {
-                _chapterModel.value = chapterInformationBody
-            }
-        }
+        savedStateHandle.get<String>("chapter_name_english")?.let { _chapterNameEnglish.value = it }
     }
 }

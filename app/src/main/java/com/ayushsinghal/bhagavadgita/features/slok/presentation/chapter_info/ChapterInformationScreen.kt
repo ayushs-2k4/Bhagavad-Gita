@@ -1,13 +1,10 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
-import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
-import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.TAG
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 
@@ -52,58 +47,50 @@ fun ChapterInformationScreen(
     chapterInformationViewModel: ChapterInformationViewModel = hiltViewModel()
 ) {
 
-    val chapterModel = chapterInformationViewModel.chapterModel.value
-
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val isInternetConnected = chapterInformationViewModel.isInternetConnected
+    val chapterNumber = chapterInformationViewModel.chapterNumber
+    val verseCount = chapterInformationViewModel.verseCount
+    val chapterNameHindi = chapterInformationViewModel.chapterNameHindi
+    val chapterNameEnglish = chapterInformationViewModel.chapterNameEnglish
 
-    if (isInternetConnected.value) {
-        if (chapterModel == null) {
-            LoadingScreen()
-        } else {
+    var isEnglishSelected by rememberSaveable {
+        mutableStateOf(false)
+    }
 
-            var isEnglishSelected by rememberSaveable {
-                mutableStateOf(false)
-            }
-
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    TopBar(
-                        scrollBehavior = scrollBehavior,
-                        chapterName = chapterModel.name,
-                        onBackButtonPressed = { navController.navigateUp() },
-                        onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
-                    )
-                }
-            ) { paddingValues ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
-                        .padding(horizontal = 10.dp)
-                ) {
-                    items(chapterModel.verses_count) {
-                        OneItem(
-                            modifier = if (it == chapterModel.verses_count - 1) {
-                                Modifier.padding(bottom = paddingValues.calculateBottomPadding())
-                            } else {
-                                Modifier
-                            },
-                            slokNumber = it + 1,
-                            isEnglishSelected = isEnglishSelected,
-                            onClick = { selectedVerseNumber ->
-                                Log.d(TAG, "clicked on verse: $selectedVerseNumber")
-                                navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterModel.chapter_number}&verse_number=${selectedVerseNumber}")
-                            }
-                        )
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopBar(
+                scrollBehavior = scrollBehavior,
+                chapterName = if (isEnglishSelected) chapterNameEnglish.value else chapterNameHindi.value,
+                onBackButtonPressed = { navController.navigateUp() },
+                onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = paddingValues.calculateTopPadding())
+                .padding(horizontal = 10.dp)
+        ) {
+            items(verseCount.value) {
+                OneItem(
+                    modifier = if (it == verseCount.value - 1) {
+                        Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                    } else {
+                        Modifier
+                    },
+                    slokNumber = it + 1,
+                    isEnglishSelected = isEnglishSelected,
+                    onClick = { selectedVerseNumber ->
+                        Log.d(TAG, "clicked on verse: $selectedVerseNumber")
+                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}")
                     }
-                }
+                )
             }
         }
-    } else {
-        NoInternetScreen(onClickTryAgain = { chapterInformationViewModel.checkInternetAndGetData() })
     }
 }
 

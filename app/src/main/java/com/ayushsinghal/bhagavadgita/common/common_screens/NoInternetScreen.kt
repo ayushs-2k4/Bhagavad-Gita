@@ -25,7 +25,6 @@ fun NoInternetScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        Text(text = "Internet not available")
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_internet_animation))
         LottieAnimation(
             composition = composition,

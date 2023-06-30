@@ -53,7 +53,7 @@ class BhagvadGitaRepositoryImpl(
 
             return Response.success(slok)
         } else {
-            return Response.error(500, response.errorBody())
+            return Response.error(response.code(), response.errorBody())
         }
     }
 
@@ -86,7 +86,7 @@ class BhagvadGitaRepositoryImpl(
 
             return Response.success(allChaptersListModel)
         } else {
-            return Response.error(500, response.errorBody())
+            return Response.error(response.code(), response.errorBody())
         }
 
     }
@@ -108,7 +108,7 @@ class BhagvadGitaRepositoryImpl(
 
             Response.success(chapterModel)
         } else {
-            Response.error(500, response.errorBody())
+            Response.error(response.code(), response.errorBody())
         }
     }
 }

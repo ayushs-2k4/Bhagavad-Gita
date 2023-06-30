@@ -1,9 +1,11 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,12 +37,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
+import com.ayushsinghal.bhagavadgita.common.common_screens.ServerErrorScreen
 import com.ayushsinghal.bhagavadgita.features.slok.domain.ChapterInfo
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 
@@ -63,53 +70,66 @@ fun AllChaptersScreen(
 
     val isInternetConnected = allChaptersScreenViewModel.isInternetConnected
 
-    val chapterInfoCardList = allChaptersList.value.map {
-        ChapterInfo(
-            chapterNumber = it.chapter_number,
-            chapterName = it.name,
-            translation = it.translation,
-            versesCount = it.verses_count,
-            hindiMeaning = it.meaning.hi,
-            englishMeaning = it.meaning.en,
-            hindiSummary = it.summary.hi,
-            englishSummary = it.summary.en
-        )
-    }
+    val hasErrorInRetrieving = allChaptersScreenViewModel.hasErrorInRetrieving
 
-    if (isInternetConnected.value) {
-        if (chapterInfoCardList.isEmpty()) {
-            LoadingScreen()
-        } else {
-            Scaffold(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                topBar = {
-                    TopBar(
-                        scrollBehavior = scrollBehavior,
-                        isEnglishSelected = isEnglishSelected,
-                        onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
-                    )
-                }
-            ) { paddingValues ->
-                LazyColumn(
-                    modifier = Modifier.padding(paddingValues)
-                ) {
-                    items(chapterInfoCardList)
-                    {
-                        ChapterInfoCard(
+    if (hasErrorInRetrieving.value) {
+        val errorCode = allChaptersScreenViewModel.responseCode.value
+        ServerErrorScreen(message = "Error Code - $errorCode\n Try again after some time")
+    } else {
+        val chapterInfoCardList = allChaptersList.value.map {
+            ChapterInfo(
+                chapterNumber = it.chapter_number,
+                chapterName = it.name,
+                translation = it.translation,
+                versesCount = it.verses_count,
+                hindiMeaning = it.meaning.hi,
+                englishMeaning = it.meaning.en,
+                hindiSummary = it.summary.hi,
+                englishSummary = it.summary.en
+            )
+        }
+
+        if (isInternetConnected.value) {
+            if (chapterInfoCardList.isEmpty()) {
+                LoadingScreen()
+            } else {
+                Scaffold(
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    topBar = {
+                        TopBar(
+                            scrollBehavior = scrollBehavior,
                             isEnglishSelected = isEnglishSelected,
-                            chapterInfo = it,
-                            onClick = { chapterNumber ->
-//                        Log.d(TAG, "Clicked on chapter: ${chapterNumber - 1}")
-                                navController.navigate(
-                                    route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}"
-                                )
-                            })
+                            onLanguageChangeButtonClicked = {
+                                isEnglishSelected = !isEnglishSelected
+                            }
+                        )
+                    }
+                ) { paddingValues ->
+                    LazyColumn(
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+                    ) {
+                        items(chapterInfoCardList.size) {
+                            ChapterInfoCard(
+                                modifier = if (it == chapterInfoCardList.size - 1) {
+                                    Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                                } else {
+                                    Modifier
+                                },
+                                isEnglishSelected = isEnglishSelected,
+                                chapterInfo = chapterInfoCardList[it],
+                                onClick = { chapterNumber ->
+                                    navController.navigate(
+                                        route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}"
+                                    )
+                                })
+                        }
+
                     }
                 }
             }
+        } else {
+            NoInternetScreen(onClickTryAgain = { allChaptersScreenViewModel.checkInternetAndGetData() })
         }
-    } else {
-        NoInternetScreen(onClickTryAgain = { allChaptersScreenViewModel.checkInternetAndGetData() })
     }
 }
 
@@ -156,7 +176,9 @@ fun ChapterInfoCard(
             )
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 7.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -1,10 +1,13 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -78,11 +81,16 @@ fun ChapterInformationScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
+                        .padding(top = paddingValues.calculateTopPadding())
                         .padding(horizontal = 10.dp)
                 ) {
                     items(chapterModel.verses_count) {
                         OneItem(
+                            modifier = if (it == chapterModel.verses_count - 1) {
+                                Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                            } else {
+                                Modifier
+                            },
                             slokNumber = it + 1,
                             isEnglishSelected = isEnglishSelected,
                             onClick = { selectedVerseNumber ->
@@ -102,12 +110,13 @@ fun ChapterInformationScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OneItem(
+    modifier: Modifier = Modifier,
     slokNumber: Int,
     isEnglishSelected: Boolean,
     onClick: (Int) -> Unit
 ) {
     OutlinedCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 5.dp)
             .clip(MaterialTheme.shapes.extraLarge)

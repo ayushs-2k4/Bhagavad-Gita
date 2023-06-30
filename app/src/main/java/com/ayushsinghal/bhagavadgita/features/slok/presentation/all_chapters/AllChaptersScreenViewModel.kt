@@ -1,17 +1,16 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
 import android.app.Application
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.all_chapters.AllChaptersListModelItem
+import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.BhagvadGitaRepository
+import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.FakeRepository
 import com.ayushsinghal.bhagavadgita.utils.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,6 +27,12 @@ class AllChaptersScreenViewModel @Inject constructor(
 
     private val _isInternetConnected = mutableStateOf<Boolean>(false)
     val isInternetConnected: State<Boolean> = _isInternetConnected
+
+    private val _hasErrorInRetrieving = mutableStateOf<Boolean>(false)
+    val hasErrorInRetrieving: State<Boolean> = _hasErrorInRetrieving
+
+    private val _responseCode = mutableStateOf<Int>(-199)
+    val responseCode: State<Int> = _responseCode
 
     init {
         checkInternetAndGetData()
@@ -49,6 +54,8 @@ class AllChaptersScreenViewModel @Inject constructor(
 
             if (response.isSuccessful && allChaptersInfo != null) {
                 withContext(Dispatchers.Main) {
+                    _hasErrorInRetrieving.value = false
+                    _responseCode.value = response.code()
 
                     val allChaptersListModelItemList = allChaptersInfo.map {
                         AllChaptersListModelItem(
@@ -63,6 +70,11 @@ class AllChaptersScreenViewModel @Inject constructor(
                     }
 
                     _allChaptersList.value = allChaptersListModelItemList
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    _responseCode.value = response.code()
+                    _hasErrorInRetrieving.value = true
                 }
             }
         }

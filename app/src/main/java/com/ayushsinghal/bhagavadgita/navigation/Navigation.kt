@@ -51,8 +51,6 @@ fun Navigation() {
         ) {
             SlokScreen(navController = navController)
         }
-
-
     }
 
 }

@@ -1,10 +1,12 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.slok
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -61,6 +63,8 @@ fun SlokScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
+
+
     if (isInternetConnected.value) {
         if (slok.value == null) {
             LoadingScreen()
@@ -82,11 +86,10 @@ fun SlokScreen(
                     )
                 }
             ) { paddingValues ->
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues = paddingValues)
+                        .padding(top = paddingValues.calculateTopPadding())
                         .padding(horizontal = 20.dp)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -120,7 +123,10 @@ fun SlokScreen(
                         rightImage = R.drawable.right_design
                     )
 
-                    Text(text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc)
+                    Text(
+                        text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc,
+                        modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                    )
 
                 }
             }

@@ -2,6 +2,7 @@ package com.ayushsinghal.bhagavadgita.features.slok.di
 
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagvadGitaApi
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
+import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.FakeRepository
 import com.ayushsinghal.bhagavadgita.features.slok.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -29,5 +30,11 @@ class AppModule {
     @Singleton
     fun provideBhagvadGitaRepositoryImpl(bhagvadGitaApi: BhagvadGitaApi): BhagvadGitaRepositoryImpl {
         return BhagvadGitaRepositoryImpl(bhagvadGitaApi = bhagvadGitaApi)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFakeRepository(): FakeRepository {
+        return FakeRepository()
     }
 }

@@ -75,7 +75,7 @@ class SlokViewModel @Inject constructor(
     }
 
     fun shareSlok(context: Context, content: String) {
-        val intent = Intent().apply {
+        Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, content)
             type = "text/plain"

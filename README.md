@@ -10,7 +10,7 @@ _**Seamless Browsing:**_ Users can effortlessly navigate through the extensive c
 
 _**Dual Translations:**_ The app provides meticulous translations of each sloka, meticulously rendered in both English and Hindi, thus catering to the diverse linguistic preferences of users.
 
-_**Seamless Sharing and Saving:**_ Users can effortlessly share their favorite slokas with others via popular social media platforms, fostering a sense of community, or save them for offline perusal, ensuring uninterrupted access.
+_**Seamless Sharing:**_ Users can effortlessly share their favorite slokas with others via popular social media platforms, fostering a sense of community.
 
 _**Night Mode:**_ The app offers an aesthetically pleasing night mode option, optimizing readability and reducing eye strain during nocturnal reading sessions.
 

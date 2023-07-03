@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -100,7 +101,9 @@ fun SlokScreen(
                         rightImage = R.drawable.right_design
                     )
 
-                    Text(text = slok.value!!.slok)
+                    SelectionContainer {
+                        Text(text = slok.value!!.slok)
+                    }
 
                     Spacer(modifier = Modifier.height(50.dp))
 
@@ -110,8 +113,9 @@ fun SlokScreen(
                         leftImage = R.drawable.left_design,
                         rightImage = R.drawable.right_design
                     )
-
-                    Text(text = if (isEnglishSelected) slok.value!!.siva.et else slok.value!!.rams.ht)
+                    SelectionContainer {
+                        Text(text = if (isEnglishSelected) slok.value!!.siva.et else slok.value!!.rams.ht)
+                    }
 
                     Spacer(modifier = Modifier.height(50.dp))
 
@@ -122,10 +126,12 @@ fun SlokScreen(
                         rightImage = R.drawable.right_design
                     )
 
-                    Text(
-                        text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc,
-                        modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
-                    )
+                    SelectionContainer {
+                        Text(
+                            text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc,
+                            modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                        )
+                    }
 
                 }
             }

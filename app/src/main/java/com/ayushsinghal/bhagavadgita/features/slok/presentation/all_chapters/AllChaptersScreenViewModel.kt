@@ -1,8 +1,6 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
 import android.app.Application
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
@@ -11,6 +9,8 @@ import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.FakeReposit
 import com.ayushsinghal.bhagavadgita.utils.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -21,17 +21,18 @@ class AllChaptersScreenViewModel @Inject constructor(
     private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
 ) : AndroidViewModel(app) {
 
-    private val _allChaptersList = mutableStateOf<List<AllChaptersListModelItem>>(emptyList())
-    val allChaptersList: State<List<AllChaptersListModelItem>> = _allChaptersList
+//    private val _allChaptersList = mutableStateOf<List<AllChaptersListModelItem>>(emptyList())
+    private val _allChaptersList = MutableStateFlow<List<AllChaptersListModelItem>>(emptyList())
+    val allChaptersList = _allChaptersList.asStateFlow()
 
-    private val _isInternetConnected = mutableStateOf<Boolean>(false)
-    val isInternetConnected: State<Boolean> = _isInternetConnected
+    private val _isInternetConnected = MutableStateFlow(false)
+    val isInternetConnected= _isInternetConnected.asStateFlow()
 
-    private val _hasErrorInRetrieving = mutableStateOf<Boolean>(false)
-    val hasErrorInRetrieving: State<Boolean> = _hasErrorInRetrieving
+    private val _hasErrorInRetrieving = MutableStateFlow(false)
+    val hasErrorInRetrieving = _hasErrorInRetrieving.asStateFlow()
 
-    private val _responseCode = mutableStateOf<Int>(-199)
-    val responseCode: State<Int> = _responseCode
+    private val _responseCode = MutableStateFlow(-199)
+    val responseCode = _responseCode.asStateFlow()
 
     init {
         checkInternetAndGetData()

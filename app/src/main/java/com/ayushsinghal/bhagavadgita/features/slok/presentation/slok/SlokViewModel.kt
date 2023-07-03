@@ -12,6 +12,8 @@ import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.Bhagva
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.slok.SlokModel
 import com.ayushsinghal.bhagavadgita.utils.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,14 +25,14 @@ class SlokViewModel @Inject constructor(
 ) : AndroidViewModel(app) {
 
 
-    private val _chapterNumber = mutableStateOf(1)
-    val chapterNumber: State<Int> = _chapterNumber
+    private val _chapterNumber = MutableStateFlow(1)
+//    val chapterNumber= _chapterNumber.asStateFlow()
 
-    private val _verseNumber = mutableStateOf(1)
-    val verseNumber: State<Int> = _verseNumber
+    private val _verseNumber = MutableStateFlow(1)
+//    val verseNumber= _verseNumber.asStateFlow()
 
-    private val _isInternetConnected = mutableStateOf<Boolean>(false)
-    val isInternetConnected: State<Boolean> = _isInternetConnected
+    private val _isInternetConnected = MutableStateFlow(false)
+    val isInternetConnected= _isInternetConnected.asStateFlow()
 
     init {
         savedStateHandle.get<Int>("chapter_number")?.let {

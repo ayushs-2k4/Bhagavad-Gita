@@ -36,6 +36,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
@@ -59,17 +60,17 @@ fun AllChaptersScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val allChaptersList = allChaptersScreenViewModel.allChaptersList
+    val allChaptersList = allChaptersScreenViewModel.allChaptersList.collectAsStateWithLifecycle().value
 
-    val isInternetConnected = allChaptersScreenViewModel.isInternetConnected
+    val isInternetConnected = allChaptersScreenViewModel.isInternetConnected.collectAsStateWithLifecycle().value
 
-    val hasErrorInRetrieving = allChaptersScreenViewModel.hasErrorInRetrieving
+    val hasErrorInRetrieving = allChaptersScreenViewModel.hasErrorInRetrieving.collectAsStateWithLifecycle().value
 
-    if (hasErrorInRetrieving.value) {
-        val errorCode = allChaptersScreenViewModel.responseCode.value
+    if (hasErrorInRetrieving) {
+        val errorCode = allChaptersScreenViewModel.responseCode
         ServerErrorScreen(message = "Error Code - $errorCode\n Try again after some time")
     } else {
-        val chapterInfoCardList = allChaptersList.value.map {
+        val chapterInfoCardList = allChaptersList.map {
             ChapterInfo(
                 chapterNumber = it.chapter_number,
                 chapterName = it.name,
@@ -82,7 +83,7 @@ fun AllChaptersScreen(
             )
         }
 
-        if (isInternetConnected.value) {
+        if (isInternetConnected) {
             if (chapterInfoCardList.isEmpty()) {
                 LoadingScreen()
             } else {

@@ -1,12 +1,12 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info
 
 import android.app.Application
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,17 +16,17 @@ class ChapterInformationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(app) {
 
-    private val _chapterNumber = mutableStateOf<Int>(-1)
-    val chapterNumber: State<Int> = _chapterNumber
+    private val _chapterNumber = MutableStateFlow(-1)
+    val chapterNumber = _chapterNumber.asStateFlow()
 
-    private val _chapterNameHindi = mutableStateOf<String>("")
-    val chapterNameHindi: State<String> = _chapterNameHindi
+    private val _chapterNameHindi = MutableStateFlow("")
+    val chapterNameHindi= _chapterNameHindi.asStateFlow()
 
-    private val _chapterNameEnglish = mutableStateOf<String>("")
-    val chapterNameEnglish: State<String> = _chapterNameEnglish
+    private val _chapterNameEnglish = MutableStateFlow("")
+    val chapterNameEnglish = _chapterNameEnglish.asStateFlow()
 
-    private val _verseCount = mutableStateOf<Int>(-1)
-    val verseCount: State<Int> = _verseCount
+    private val _verseCount = MutableStateFlow(-1)
+    val verseCount = _verseCount.asStateFlow()
 
     init {
         savedStateHandle.get<Int>("chapter_number")?.let { _chapterNumber.value = it }

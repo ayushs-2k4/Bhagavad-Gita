@@ -35,6 +35,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.TAG
@@ -49,10 +50,10 @@ fun ChapterInformationScreen(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val chapterNumber = chapterInformationViewModel.chapterNumber
-    val verseCount = chapterInformationViewModel.verseCount
-    val chapterNameHindi = chapterInformationViewModel.chapterNameHindi
-    val chapterNameEnglish = chapterInformationViewModel.chapterNameEnglish
+    val chapterNumber = chapterInformationViewModel.chapterNumber.collectAsStateWithLifecycle()
+    val verseCount = chapterInformationViewModel.verseCount.collectAsStateWithLifecycle()
+    val chapterNameHindi = chapterInformationViewModel.chapterNameHindi.collectAsStateWithLifecycle()
+    val chapterNameEnglish = chapterInformationViewModel.chapterNameEnglish.collectAsStateWithLifecycle()
 
     var isEnglishSelected by rememberSaveable {
         mutableStateOf(false)

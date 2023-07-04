@@ -22,6 +22,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -30,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +52,7 @@ import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.ServerErrorScreen
 import com.ayushsinghal.bhagavadgita.features.slok.domain.ChapterInfo
 import com.ayushsinghal.bhagavadgita.navigation.Screen
+import kotlinx.coroutines.launch
 
 const val TAG = "myRecognisingTAG"
 
@@ -63,6 +68,9 @@ fun AllChaptersScreen(
     var isEnglishSelected by rememberSaveable {
         mutableStateOf(false)
     }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -97,6 +105,7 @@ fun AllChaptersScreen(
                 LoadingScreen()
             } else {
                 Scaffold(
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     topBar = {
                         TopBar(
@@ -144,6 +153,13 @@ fun AllChaptersScreen(
                                             "अध्याय ${chapterInfoCardList[chapterNumber - 1].chapterNumber} - ${chapterInfoCardList[chapterNumber - 1].chapterName}\n${chapterInfoCardList[chapterNumber - 1].hindiSummary}"
                                         }
                                     )
+
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "Chapter Information copied to clipboard",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
                                 }
                             )
                         }

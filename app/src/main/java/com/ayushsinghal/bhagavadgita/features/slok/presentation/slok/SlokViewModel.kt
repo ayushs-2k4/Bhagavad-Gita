@@ -88,7 +88,7 @@ class SlokViewModel @Inject constructor(
     fun copyToClipboard(context: Context, content: String) {
         val clipboardManager =
             context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Chapter Information", content)
+        val clip = ClipData.newPlainText("Slok Information", content)
         clipboardManager.setPrimaryClip(clip)
     }
 }

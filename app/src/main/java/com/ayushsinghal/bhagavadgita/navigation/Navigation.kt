@@ -51,12 +51,15 @@ fun Navigation() {
         }
 
         composable(
-            route = Screen.SlokScreen.route + "?chapter_number={chapter_number}&verse_number={verse_number}",
+            route = Screen.SlokScreen.route + "?chapter_number={chapter_number}&verse_number={verse_number}&total_slok_count_in_current_chapter={total_slok_count_in_current_chapter}",
             arguments = listOf(
                 navArgument("chapter_number") {
                     type = NavType.IntType
                 },
                 navArgument("verse_number") {
+                    type = NavType.IntType
+                },
+                navArgument("total_slok_count_in_current_chapter"){
                     type = NavType.IntType
                 }
             )

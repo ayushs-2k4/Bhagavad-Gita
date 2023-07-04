@@ -33,8 +33,11 @@ class SlokViewModel @Inject constructor(
     private val _verseNumber = MutableStateFlow(1)
 //    val verseNumber= _verseNumber.asStateFlow()
 
+    private val _totalSlokCountInCurrentChapter = MutableStateFlow(1)
+    val totalSlokCountInCurrentChapter = _totalSlokCountInCurrentChapter.asStateFlow()
+
     private val _isInternetConnected = MutableStateFlow(false)
-    val isInternetConnected= _isInternetConnected.asStateFlow()
+    val isInternetConnected = _isInternetConnected.asStateFlow()
 
     init {
         savedStateHandle.get<Int>("chapter_number")?.let {
@@ -43,6 +46,10 @@ class SlokViewModel @Inject constructor(
 
         savedStateHandle.get<Int>("verse_number")?.let {
             _verseNumber.value = it
+        }
+
+        savedStateHandle.get<Int>("total_slok_count_in_current_chapter")?.let {
+            _totalSlokCountInCurrentChapter.value = it
         }
 
         checkInternetAndGetData()

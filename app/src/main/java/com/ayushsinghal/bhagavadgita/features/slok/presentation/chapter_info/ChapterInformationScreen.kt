@@ -87,7 +87,7 @@ fun ChapterInformationScreen(
                     isEnglishSelected = isEnglishSelected,
                     onClick = { selectedVerseNumber ->
                         Log.d(TAG, "clicked on verse: $selectedVerseNumber")
-                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}")
+                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${verseCount.value}")
                     }
                 )
             }

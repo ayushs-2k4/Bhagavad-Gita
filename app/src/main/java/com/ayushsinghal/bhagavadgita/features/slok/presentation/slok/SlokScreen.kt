@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -47,6 +49,7 @@ import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
+import com.ayushsinghal.bhagavadgita.navigation.Screen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +66,9 @@ fun SlokScreen(
     var isEnglishSelected by rememberSaveable {
         mutableStateOf(false)
     }
+
+    val totalSlokCountInCurrentChapter =
+        slokViewModel.totalSlokCountInCurrentChapter.collectAsStateWithLifecycle()
 
     val isInternetConnected = slokViewModel.isInternetConnected.collectAsStateWithLifecycle()
 
@@ -149,10 +155,64 @@ fun SlokScreen(
                     SelectionContainer {
                         Text(
                             text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc,
-                            modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                            modifier = Modifier.padding(bottom = 20.dp)
                         )
                     }
 
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = paddingValues.calculateBottomPadding())
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                if (slok.value!!.verse != 1) {
+                                    navController.navigateUp()
+                                    navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse - 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}")
+                                } else {
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = if (isEnglishSelected) "This is first slok of this chapter" else "यह इस अध्याय का पहला श्लोक है",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                }
+                            },
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                pressedElevation = 0.dp,
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_back_ios),
+                                contentDescription = "Go to previous Slok"
+                            )
+                        }
+
+                        FloatingActionButton(
+                            onClick = {
+                                if (slok.value!!.verse != totalSlokCountInCurrentChapter.value) {
+                                    navController.navigateUp()
+                                    navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse + 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}")
+                                } else {
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = if (isEnglishSelected) "This is last slok of this chapter" else "यह इस अध्याय का अंतिम श्लोक है",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                }
+                            },
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                pressedElevation = 0.dp,
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.arrow_forward_ios),
+                                contentDescription = "Go to previous Slok"
+                            )
+                        }
+                    }
                 }
             }
         }

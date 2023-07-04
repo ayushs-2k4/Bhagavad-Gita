@@ -1,6 +1,8 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
@@ -18,15 +20,14 @@ import javax.inject.Inject
 @HiltViewModel
 class AllChaptersScreenViewModel @Inject constructor(
     app: Application,
-    private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
+    private val bhagavadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
 ) : AndroidViewModel(app) {
 
-//    private val _allChaptersList = mutableStateOf<List<AllChaptersListModelItem>>(emptyList())
     private val _allChaptersList = MutableStateFlow<List<AllChaptersListModelItem>>(emptyList())
     val allChaptersList = _allChaptersList.asStateFlow()
 
     private val _isInternetConnected = MutableStateFlow(false)
-    val isInternetConnected= _isInternetConnected.asStateFlow()
+    val isInternetConnected = _isInternetConnected.asStateFlow()
 
     private val _hasErrorInRetrieving = MutableStateFlow(false)
     val hasErrorInRetrieving = _hasErrorInRetrieving.asStateFlow()
@@ -49,7 +50,7 @@ class AllChaptersScreenViewModel @Inject constructor(
 
     private fun getAllChaptersInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = bhagvadGitaRepositoryImpl.getAllChapterInformation()
+            val response = bhagavadGitaRepositoryImpl.getAllChapterInformation()
             val allChaptersInfo = response.body()
 
             if (response.isSuccessful && allChaptersInfo != null) {
@@ -77,6 +78,16 @@ class AllChaptersScreenViewModel @Inject constructor(
                     _hasErrorInRetrieving.value = true
                 }
             }
+        }
+    }
+
+    fun shareChapterInformation(context: Context, content: String) {
+        Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, content)
+            type = "text/plain"
+            val intentChooser = Intent.createChooser(this, "Hi")
+            context.startActivity(intentChooser)
         }
     }
 }

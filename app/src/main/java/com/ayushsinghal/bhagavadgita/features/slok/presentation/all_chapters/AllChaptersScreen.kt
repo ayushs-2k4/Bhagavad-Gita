@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,17 +58,22 @@ fun AllChaptersScreen(
     allChaptersScreenViewModel: AllChaptersScreenViewModel = hiltViewModel()
 ) {
 
+    val context = LocalContext.current
+
     var isEnglishSelected by rememberSaveable {
         mutableStateOf(false)
     }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val allChaptersList = allChaptersScreenViewModel.allChaptersList.collectAsStateWithLifecycle().value
+    val allChaptersList =
+        allChaptersScreenViewModel.allChaptersList.collectAsStateWithLifecycle().value
 
-    val isInternetConnected = allChaptersScreenViewModel.isInternetConnected.collectAsStateWithLifecycle().value
+    val isInternetConnected =
+        allChaptersScreenViewModel.isInternetConnected.collectAsStateWithLifecycle().value
 
-    val hasErrorInRetrieving = allChaptersScreenViewModel.hasErrorInRetrieving.collectAsStateWithLifecycle().value
+    val hasErrorInRetrieving =
+        allChaptersScreenViewModel.hasErrorInRetrieving.collectAsStateWithLifecycle().value
 
     if (hasErrorInRetrieving) {
         val errorCode = allChaptersScreenViewModel.responseCode
@@ -111,11 +120,22 @@ fun AllChaptersScreen(
                                 },
                                 isEnglishSelected = isEnglishSelected,
                                 chapterInfo = chapterInfoCardList[it],
-                                onClick = { chapterNumber ->
+                                onClickCard = { chapterNumber ->
                                     navController.navigate(
                                         route = Screen.ChapterInformationScreen.route + "?chapter_number=${chapterInfoCardList[chapterNumber - 1].chapterNumber}&chapter_name_hindi=${chapterInfoCardList[chapterNumber - 1].chapterName}&chapter_name_english=${chapterInfoCardList[chapterNumber - 1].translation}&verse_count=${chapterInfoCardList[chapterNumber - 1].versesCount}"
                                     )
-                                })
+                                },
+                                onClickShareIcon = { chapterNumber ->
+                                    allChaptersScreenViewModel.shareChapterInformation(
+                                        context = context,
+                                        content = if (isEnglishSelected) {
+                                            "Chapter ${chapterInfoCardList[chapterNumber - 1].chapterNumber} - ${chapterInfoCardList[chapterNumber - 1].translation}\n${chapterInfoCardList[chapterNumber - 1].englishSummary}"
+                                        } else {
+                                            "अध्याय ${chapterInfoCardList[chapterNumber - 1].chapterNumber} - ${chapterInfoCardList[chapterNumber - 1].chapterName}\n${chapterInfoCardList[chapterNumber - 1].hindiSummary}"
+                                        }
+                                    )
+                                }
+                            )
                         }
 
                     }
@@ -157,7 +177,8 @@ fun ChapterInfoCard(
     modifier: Modifier = Modifier,
     isEnglishSelected: Boolean,
     chapterInfo: ChapterInfo,
-    onClick: (Int) -> Unit
+    onClickCard: (Int) -> Unit,
+    onClickShareIcon: (Int) -> Unit
 ) {
     OutlinedCard(
         modifier = modifier
@@ -166,7 +187,7 @@ fun ChapterInfoCard(
             .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(),
-                onClick = { onClick(chapterInfo.chapterNumber) },
+                onClick = { onClickCard(chapterInfo.chapterNumber) },
             )
     ) {
         Row(
@@ -209,5 +230,33 @@ fun ChapterInfoCard(
             modifier = Modifier
                 .padding(20.dp)
         )
+
+        FloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(end = 16.dp, bottom = 16.dp),
+            onClick = { onClickShareIcon(chapterInfo.chapterNumber) }
+        ) {
+            Icon(imageVector = Icons.Default.Share, contentDescription = null)
+        }
     }
 }
+
+//@Preview
+//@Composable
+//fun ChapterInfoCardPreview() {
+//    ChapterInfoCard(
+//        isEnglishSelected = false,
+//        chapterInfo = ChapterInfo(
+//            chapterNumber = 1,
+//            chapterName = "Name",
+//            translation = "Translation",
+//            versesCount = 987,
+//            hindiMeaning = "Hindi Meaning",
+//            englishMeaning = "English Meaning",
+//            hindiSummary = "Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary ",
+//            englishSummary = "English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary ",
+//        ),
+//        onClick = {}
+//    )
+//}

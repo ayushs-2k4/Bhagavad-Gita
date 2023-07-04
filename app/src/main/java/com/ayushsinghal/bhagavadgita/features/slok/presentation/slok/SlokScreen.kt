@@ -121,7 +121,7 @@ fun SlokScreen(
 
                     TextHeadingDesign(
                         modifier = Modifier.padding(vertical = 20.dp),
-                        text = if (isEnglishSelected) "Explanation" else "व्याख्या",
+                        text = if (isEnglishSelected) "Explanation (by Acharya Raman)" else "आचार्य राम की व्याख्या",
                         leftImage = R.drawable.left_design,
                         rightImage = R.drawable.right_design
                     )
@@ -193,8 +193,8 @@ fun TextHeadingDesign(
             modifier = Modifier.weight(1f)
         )
         Text(
+            modifier = Modifier.padding(horizontal = 10.dp),
             text = text,
-            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center
         )
         Image(

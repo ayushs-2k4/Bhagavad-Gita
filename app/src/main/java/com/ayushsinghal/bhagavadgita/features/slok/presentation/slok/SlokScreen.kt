@@ -76,10 +76,16 @@ fun SlokScreen(
                         scrollBehavior = scrollBehavior,
                         title = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}",
                         onBackClick = { navController.navigateUp() },
+                        onClickCopyButton = {
+                            slokViewModel.copyToClipboard(
+                                context = context,
+                                content = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}\nVerse\n${slok.value!!.slok}\n\nTranslation\n${slok.value!!.siva.et}\n\nExplanation (by Acharya Raman)\n${slok.value!!.raman.et}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}\nश्लोक\n${slok.value!!.slok}\n\nअनुवाद\n${slok.value!!.rams.ht}\n\nआचार्य राम की व्याख्या\n${slok.value!!.rams.hc}"
+                            )
+                        },
                         onClickShareButton = {
                             slokViewModel.shareSlok(
                                 context = context,
-                                content = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}\nVerse\n${slok.value!!.slok}\n\nTranslation\n${slok.value!!.siva.et}\n\nExplanation\n${slok.value!!.raman.et}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}\nश्लोक\n${slok.value!!.slok}\n\nअनुवाद\n${slok.value!!.rams.ht}\n\nव्याख्या\n${slok.value!!.rams.hc}"
+                                content = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}\nVerse\n${slok.value!!.slok}\n\nTranslation\n${slok.value!!.siva.et}\n\nExplanation (by Acharya Raman)\n${slok.value!!.raman.et}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}\nश्लोक\n${slok.value!!.slok}\n\nअनुवाद\n${slok.value!!.rams.ht}\n\nआचार्य राम की व्याख्या\n${slok.value!!.rams.hc}"
                             )
                         },
                         onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
@@ -147,6 +153,7 @@ fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     title: String,
     onBackClick: () -> Unit,
+    onClickCopyButton: () -> Unit,
     onClickShareButton: () -> Unit,
     onLanguageChangeButtonClicked: () -> Unit
 ) {
@@ -159,6 +166,13 @@ fun TopBar(
             }
         },
         actions = {
+
+            IconButton(onClick = { onClickCopyButton() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.content_copy),
+                    contentDescription = "Copy to Clipboard"
+                )
+            }
 
             IconButton(onClick = { onClickShareButton() }) {
                 Icon(imageVector = Icons.Default.Share, contentDescription = "Share")

@@ -134,6 +134,16 @@ fun AllChaptersScreen(
                                             "अध्याय ${chapterInfoCardList[chapterNumber - 1].chapterNumber} - ${chapterInfoCardList[chapterNumber - 1].chapterName}\n${chapterInfoCardList[chapterNumber - 1].hindiSummary}"
                                         }
                                     )
+                                },
+                                onClickCopyIcon = { chapterNumber ->
+                                    allChaptersScreenViewModel.copyToClipboard(
+                                        context = context,
+                                        content = if (isEnglishSelected) {
+                                            "Chapter ${chapterInfoCardList[chapterNumber - 1].chapterNumber} - ${chapterInfoCardList[chapterNumber - 1].translation}\n${chapterInfoCardList[chapterNumber - 1].englishSummary}"
+                                        } else {
+                                            "अध्याय ${chapterInfoCardList[chapterNumber - 1].chapterNumber} - ${chapterInfoCardList[chapterNumber - 1].chapterName}\n${chapterInfoCardList[chapterNumber - 1].hindiSummary}"
+                                        }
+                                    )
                                 }
                             )
                         }
@@ -178,7 +188,8 @@ fun ChapterInfoCard(
     isEnglishSelected: Boolean,
     chapterInfo: ChapterInfo,
     onClickCard: (Int) -> Unit,
-    onClickShareIcon: (Int) -> Unit
+    onClickShareIcon: (Int) -> Unit,
+    onClickCopyIcon: (Int) -> Unit
 ) {
     OutlinedCard(
         modifier = modifier
@@ -231,13 +242,32 @@ fun ChapterInfoCard(
                 .padding(20.dp)
         )
 
-        FloatingActionButton(
+        Row(
             modifier = Modifier
-                .align(Alignment.End)
+                .fillMaxSize()
                 .padding(end = 16.dp, bottom = 16.dp),
-            onClick = { onClickShareIcon(chapterInfo.chapterNumber) }
+            horizontalArrangement = Arrangement.End
         ) {
-            Icon(imageVector = Icons.Default.Share, contentDescription = null)
+            FloatingActionButton(
+
+                onClick = { onClickCopyIcon(chapterInfo.chapterNumber) }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.content_copy),
+                    contentDescription = "Copy to Clipboard"
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            FloatingActionButton(
+                onClick = { onClickShareIcon(chapterInfo.chapterNumber) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share"
+                )
+            }
         }
     }
 }

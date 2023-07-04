@@ -1,6 +1,8 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
@@ -89,5 +91,12 @@ class AllChaptersScreenViewModel @Inject constructor(
             val intentChooser = Intent.createChooser(this, "Hi")
             context.startActivity(intentChooser)
         }
+    }
+
+    fun copyToClipboard(context: Context, content: String) {
+        val clipboardManager =
+            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Chapter Information", content)
+        clipboardManager.setPrimaryClip(clip)
     }
 }

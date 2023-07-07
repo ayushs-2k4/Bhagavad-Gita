@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.AllChaptersScreen
+import com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark.BookmarkScreen
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info.ChapterInformationScreen
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.slok.SlokScreen
 
@@ -51,7 +52,7 @@ fun Navigation() {
         }
 
         composable(
-            route = Screen.SlokScreen.route + "?chapter_number={chapter_number}&verse_number={verse_number}&total_slok_count_in_current_chapter={total_slok_count_in_current_chapter}",
+            route = Screen.SlokScreen.route + "?chapter_number={chapter_number}&verse_number={verse_number}&total_slok_count_in_current_chapter={total_slok_count_in_current_chapter}&should_show_navigation_buttons={should_show_navigation_buttons}",
             arguments = listOf(
                 navArgument("chapter_number") {
                     type = NavType.IntType
@@ -59,12 +60,20 @@ fun Navigation() {
                 navArgument("verse_number") {
                     type = NavType.IntType
                 },
-                navArgument("total_slok_count_in_current_chapter"){
+                navArgument("total_slok_count_in_current_chapter") {
                     type = NavType.IntType
+                },
+                navArgument("should_show_navigation_buttons") {
+                    type = NavType.BoolType
+                    nullable = false
                 }
             )
         ) {
             SlokScreen(navController = navController)
+        }
+
+        composable(route = Screen.BookmarksScreen.route) {
+            BookmarkScreen(navController = navController)
         }
     }
 

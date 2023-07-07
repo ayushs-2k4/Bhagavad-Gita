@@ -52,8 +52,10 @@ fun ChapterInformationScreen(
 
     val chapterNumber = chapterInformationViewModel.chapterNumber.collectAsStateWithLifecycle()
     val verseCount = chapterInformationViewModel.verseCount.collectAsStateWithLifecycle()
-    val chapterNameHindi = chapterInformationViewModel.chapterNameHindi.collectAsStateWithLifecycle()
-    val chapterNameEnglish = chapterInformationViewModel.chapterNameEnglish.collectAsStateWithLifecycle()
+    val chapterNameHindi =
+        chapterInformationViewModel.chapterNameHindi.collectAsStateWithLifecycle()
+    val chapterNameEnglish =
+        chapterInformationViewModel.chapterNameEnglish.collectAsStateWithLifecycle()
 
     var isEnglishSelected by rememberSaveable {
         mutableStateOf(false)
@@ -87,7 +89,7 @@ fun ChapterInformationScreen(
                     isEnglishSelected = isEnglishSelected,
                     onClick = { selectedVerseNumber ->
                         Log.d(TAG, "clicked on verse: $selectedVerseNumber")
-                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${verseCount.value}")
+                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${verseCount.value}&should_show_navigation_buttons=${true}")
                     }
                 )
             }

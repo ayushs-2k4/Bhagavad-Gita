@@ -1,5 +1,11 @@
 package com.ayushsinghal.bhagavadgita.features.slok.di
 
+import android.app.Application
+import androidx.room.Room
+import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkDao
+import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkDatabase
+import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkRepository
+import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.Migrations.MIGRATION_0_1
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagvadGitaApi
 import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
 import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.FakeRepository
@@ -36,5 +42,29 @@ class AppModule {
     @Singleton
     fun provideFakeRepository(): FakeRepository {
         return FakeRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkDatabase(application: Application): BookmarkDatabase {
+        return Room.databaseBuilder(
+            application,
+            BookmarkDatabase::class.java,
+            "bookmark_database"
+        )
+            .addMigrations(MIGRATION_0_1)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkDao(bookmarkDatabase: BookmarkDatabase): BookmarkDao {
+        return bookmarkDatabase.bookmarkDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookmarkRepository(bookmarkDao: BookmarkDao): BookmarkRepository {
+        return BookmarkRepository(bookmarkDao)
     }
 }

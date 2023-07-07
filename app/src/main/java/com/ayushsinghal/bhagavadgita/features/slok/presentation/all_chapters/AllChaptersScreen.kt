@@ -1,12 +1,14 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,6 +44,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -111,6 +115,7 @@ fun AllChaptersScreen(
                         TopBar(
                             scrollBehavior = scrollBehavior,
                             isEnglishSelected = isEnglishSelected,
+                            onAllBookmarksButtonClicked = { navController.navigate(route = Screen.BookmarksScreen.route) },
                             onLanguageChangeButtonClicked = {
                                 isEnglishSelected = !isEnglishSelected
                             }
@@ -123,7 +128,8 @@ fun AllChaptersScreen(
                         items(chapterInfoCardList.size) {
                             ChapterInfoCard(
                                 modifier = if (it == chapterInfoCardList.size - 1) {
-                                    Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                                    Modifier
+                                        .padding(bottom = paddingValues.calculateBottomPadding())
                                 } else {
                                     Modifier
                                 },
@@ -178,6 +184,7 @@ fun AllChaptersScreen(
 fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     isEnglishSelected: Boolean,
+    onAllBookmarksButtonClicked: () -> Unit,
     onLanguageChangeButtonClicked: () -> Unit
 ) {
     TopAppBar(
@@ -186,6 +193,14 @@ fun TopBar(
             Text(text = if (isEnglishSelected) "Chapters" else "अध्यायों की सूची")
         },
         actions = {
+
+            IconButton(onClick = { onAllBookmarksButtonClicked() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.bookmarks_all),
+                    contentDescription = "Go to Bookmarks"
+                )
+            }
+
             IconButton(onClick = { onLanguageChangeButtonClicked() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.translate_hindi_english),
@@ -217,37 +232,24 @@ fun ChapterInfoCard(
                 onClick = { onClickCard(chapterInfo.chapterNumber) },
             )
     ) {
-        Row(
+        Text(
+            text = if (isEnglishSelected) "${chapterInfo.chapterNumber} - ${chapterInfo.translation}" else "${chapterInfo.chapterNumber} - ${chapterInfo.chapterName}",
+            style = MaterialTheme.typography.headlineLarge,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 7.dp)
-                .padding(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = chapterInfo.chapterNumber.toString(),
-                style = MaterialTheme.typography.headlineLarge
-            )
-
-            Spacer(modifier = Modifier.width(5.dp))
-
-            Text(text = "-")
-
-            Spacer(modifier = Modifier.width(5.dp))
-
-            Text(
-                text = if (isEnglishSelected) chapterInfo.translation else chapterInfo.chapterName,
-                style = MaterialTheme.typography.headlineLarge
-            )
-        }
+                .fillMaxWidth()
+                .padding(20.dp)
+        )
 
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = if (isEnglishSelected) "Verses - ${chapterInfo.versesCount}" else "श्लोक - ${chapterInfo.versesCount}")
+            Text(
+                text = if (isEnglishSelected) "Verses - ${chapterInfo.versesCount}" else "श्लोक - ${chapterInfo.versesCount}",
+                textAlign = TextAlign.Center,
+            )
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -256,11 +258,13 @@ fun ChapterInfoCard(
             text = if (isEnglishSelected) chapterInfo.englishSummary else chapterInfo.hindiSummary,
             modifier = Modifier
                 .padding(20.dp)
+                .animateContentSize(animationSpec = tween()),
+            textAlign = TextAlign.Center
         )
 
         Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(end = 16.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.End
         ) {
@@ -288,21 +292,23 @@ fun ChapterInfoCard(
     }
 }
 
-//@Preview
-//@Composable
-//fun ChapterInfoCardPreview() {
-//    ChapterInfoCard(
-//        isEnglishSelected = false,
-//        chapterInfo = ChapterInfo(
-//            chapterNumber = 1,
-//            chapterName = "Name",
-//            translation = "Translation",
-//            versesCount = 987,
-//            hindiMeaning = "Hindi Meaning",
-//            englishMeaning = "English Meaning",
-//            hindiSummary = "Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary Hindi Summary ",
-//            englishSummary = "English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary ",
-//        ),
-//        onClick = {}
-//    )
-//}
+@Preview(showSystemUi = true)
+@Composable
+fun ChapterInfoCardPreview() {
+    ChapterInfoCard(
+        isEnglishSelected = false,
+        chapterInfo = ChapterInfo(
+            chapterNumber = 4,
+            chapterName = "जनन कर्म संन्यास योग जनन कर्म संन्यास योग",
+            translation = "Janana Karma Sanyasa Yoga Janana Karma Sanyasa Yoga",
+            versesCount = 987,
+            hindiMeaning = "हिंदी अर्थ",
+            englishMeaning = "English Meaning",
+            hindiSummary = "हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश हिंदी सारांश ",
+            englishSummary = "English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary English Summary ",
+        ),
+        onClickCard = {},
+        onClickCopyIcon = {},
+        onClickShareIcon = {}
+    )
+}

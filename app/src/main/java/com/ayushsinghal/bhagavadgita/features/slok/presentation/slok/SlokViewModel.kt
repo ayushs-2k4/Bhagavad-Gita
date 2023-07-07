@@ -39,6 +39,9 @@ class SlokViewModel @Inject constructor(
     private val _isInternetConnected = MutableStateFlow(false)
     val isInternetConnected = _isInternetConnected.asStateFlow()
 
+    private val _shouldShowNavigationButtons = MutableStateFlow(true)
+    val shouldShowNavigationButtons = _shouldShowNavigationButtons.asStateFlow()
+
     init {
         savedStateHandle.get<Int>("chapter_number")?.let {
             _chapterNumber.value = it
@@ -50,6 +53,10 @@ class SlokViewModel @Inject constructor(
 
         savedStateHandle.get<Int>("total_slok_count_in_current_chapter")?.let {
             _totalSlokCountInCurrentChapter.value = it
+        }
+
+        savedStateHandle.get<Boolean>("should_show_navigation_buttons")?.let {
+            _shouldShowNavigationButtons.value = it
         }
 
         checkInternetAndGetData()

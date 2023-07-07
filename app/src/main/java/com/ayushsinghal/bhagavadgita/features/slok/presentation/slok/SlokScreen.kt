@@ -3,6 +3,7 @@ package com.ayushsinghal.bhagavadgita.features.slok.presentation.slok
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -43,12 +46,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
+import com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark.BookmarkViewModel
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -56,7 +61,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SlokScreen(
     navController: NavController,
-    slokViewModel: SlokViewModel = hiltViewModel()
+    slokViewModel: SlokViewModel = hiltViewModel(),
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
 
     val slok = remember { slokViewModel.slok }
@@ -72,6 +78,9 @@ fun SlokScreen(
 
     val isInternetConnected = slokViewModel.isInternetConnected.collectAsStateWithLifecycle()
 
+    val shouldShowNavigationButtons =
+        slokViewModel.shouldShowNavigationButtons.collectAsStateWithLifecycle()
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -81,6 +90,9 @@ fun SlokScreen(
         if (slok.value == null) {
             LoadingScreen()
         } else {
+            val isBookmarked =
+                bookmarkViewModel.isPageBookmarked(name = "${slok.value?.chapter!!}" + " " + "${slok.value?.verse!!}")
+
             Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -88,6 +100,14 @@ fun SlokScreen(
                     TopBar(
                         scrollBehavior = scrollBehavior,
                         title = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}",
+                        isBookmarked = isBookmarked,
+                        onClickBookmarkButton = {
+                            if (isBookmarked) {
+                                bookmarkViewModel.removeBookmark(name = "${slok.value?.chapter!!}" + " " + "${slok.value?.verse!!}")
+                            } else {
+                                bookmarkViewModel.addBookmark(name = "${slok.value?.chapter!!}" + " " + "${slok.value?.verse!!}")
+                            }
+                        },
                         onBackClick = { navController.navigateUp() },
                         onClickCopyButton = {
                             slokViewModel.copyToClipboard(
@@ -159,17 +179,13 @@ fun SlokScreen(
                         )
                     }
 
-                    Row(
-                        modifier = Modifier
-                            .padding(bottom = paddingValues.calculateBottomPadding())
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        FloatingActionButton(
-                            onClick = {
+                    if (shouldShowNavigationButtons.value) {
+                        BottomNavigationRow(
+                            paddingValues = paddingValues,
+                            onClickPreviousSlokButton = {
                                 if (slok.value!!.verse != 1) {
                                     navController.navigateUp()
-                                    navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse - 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}")
+                                    navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse - 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}&should_show_navigation_buttons=${true}")
                                 } else {
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar(
@@ -179,21 +195,10 @@ fun SlokScreen(
                                     }
                                 }
                             },
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                pressedElevation = 0.dp,
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.arrow_back_ios),
-                                contentDescription = "Go to previous Slok"
-                            )
-                        }
-
-                        FloatingActionButton(
-                            onClick = {
+                            onClickNextSlokButton = {
                                 if (slok.value!!.verse != totalSlokCountInCurrentChapter.value) {
                                     navController.navigateUp()
-                                    navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse + 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}")
+                                    navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse + 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}&should_show_navigation_buttons=${true}")
                                 } else {
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar(
@@ -202,16 +207,8 @@ fun SlokScreen(
                                         )
                                     }
                                 }
-                            },
-                            elevation = FloatingActionButtonDefaults.elevation(
-                                pressedElevation = 0.dp,
-                            )
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.arrow_forward_ios),
-                                contentDescription = "Go to previous Slok"
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             }
@@ -226,6 +223,8 @@ fun SlokScreen(
 fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     title: String,
+    isBookmarked: Boolean,
+    onClickBookmarkButton: () -> Unit,
     onBackClick: () -> Unit,
     onClickCopyButton: () -> Unit,
     onClickShareButton: () -> Unit,
@@ -233,13 +232,27 @@ fun TopBar(
 ) {
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
-        title = { Text(text = title) },
+        title = { Text(text = title, fontSize = 20.sp) },
         navigationIcon = {
             IconButton(onClick = { onBackClick() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go back")
             }
         },
         actions = {
+
+            IconButton(onClick = { onClickBookmarkButton() }) {
+                if (isBookmarked) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.bookmark_filled),
+                        contentDescription = "Remove Bookmark"
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(id = R.drawable.bookmark_outlined),
+                        contentDescription = "Add Bookmark"
+                    )
+                }
+            }
 
             IconButton(onClick = { onClickCopyButton() }) {
                 Icon(
@@ -290,5 +303,47 @@ fun TextHeadingDesign(
             contentDescription = "right design",
             modifier = Modifier.weight(1f)
         )
+    }
+}
+
+@Composable
+fun BottomNavigationRow(
+    paddingValues: PaddingValues,
+    onClickPreviousSlokButton: () -> Unit,
+    onClickNextSlokButton: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(bottom = paddingValues.calculateBottomPadding())
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        FloatingActionButton(
+            onClick = {
+                onClickPreviousSlokButton()
+            },
+            elevation = FloatingActionButtonDefaults.elevation(
+                pressedElevation = 0.dp,
+            )
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_back_ios),
+                contentDescription = "Go to previous Slok"
+            )
+        }
+
+        FloatingActionButton(
+            onClick = {
+                onClickNextSlokButton()
+            },
+            elevation = FloatingActionButtonDefaults.elevation(
+                pressedElevation = 0.dp,
+            )
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_forward_ios),
+                contentDescription = "Go to previous Slok"
+            )
+        }
     }
 }

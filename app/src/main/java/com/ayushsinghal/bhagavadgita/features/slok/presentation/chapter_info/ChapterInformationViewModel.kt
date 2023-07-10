@@ -3,7 +3,7 @@ package com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
+import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagavadGitaRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChapterInformationViewModel @Inject constructor(
     app: Application,
-    private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
+    private val bhagavadGitaRepositoryImpl: BhagavadGitaRepositoryImpl,
     savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(app) {
 
@@ -20,7 +20,7 @@ class ChapterInformationViewModel @Inject constructor(
     val chapterNumber = _chapterNumber.asStateFlow()
 
     private val _chapterNameHindi = MutableStateFlow("")
-    val chapterNameHindi= _chapterNameHindi.asStateFlow()
+    val chapterNameHindi = _chapterNameHindi.asStateFlow()
 
     private val _chapterNameEnglish = MutableStateFlow("")
     val chapterNameEnglish = _chapterNameEnglish.asStateFlow()

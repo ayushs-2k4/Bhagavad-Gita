@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
+import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagavadGitaRepositoryImpl
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.slok.SlokModel
 import com.ayushsinghal.bhagavadgita.utils.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SlokViewModel @Inject constructor(
     app: Application,
-    private val bhagvadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
+    private val bhagavadGitaRepositoryImpl: BhagavadGitaRepositoryImpl,
     savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(app) {
 
@@ -63,7 +63,7 @@ class SlokViewModel @Inject constructor(
     }
 
     fun checkInternetAndGetData() {
-        if (NetworkUtils.isInternetAvailable(bhagvadGitaApp = getApplication())) {
+        if (NetworkUtils.isInternetAvailable(bhagavadGitaApp = getApplication())) {
             _isInternetConnected.value = true
             getRandomSlok()
         } else {
@@ -76,7 +76,7 @@ class SlokViewModel @Inject constructor(
 
     private fun getRandomSlok() {
         viewModelScope.launch {
-            val result = bhagvadGitaRepositoryImpl.getSlok(
+            val result = bhagavadGitaRepositoryImpl.getSlok(
                 chapter = _chapterNumber.value,
                 verse = _verseNumber.value
             )

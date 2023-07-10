@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
+import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagavadGitaRepositoryImpl
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.all_chapters.AllChaptersListModelItem
 import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.FakeRepository
 import com.ayushsinghal.bhagavadgita.utils.NetworkUtils
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllChaptersScreenViewModel @Inject constructor(
     app: Application,
-    private val bhagavadGitaRepositoryImpl: BhagvadGitaRepositoryImpl,
+    private val bhagavadGitaRepositoryImpl: BhagavadGitaRepositoryImpl,
 ) : AndroidViewModel(app) {
 
     private val _allChaptersList = MutableStateFlow<List<AllChaptersListModelItem>>(emptyList())
@@ -42,7 +42,7 @@ class AllChaptersScreenViewModel @Inject constructor(
     }
 
     fun checkInternetAndGetData() {
-        if (NetworkUtils.isInternetAvailable(bhagvadGitaApp = getApplication())) {
+        if (NetworkUtils.isInternetAvailable(bhagavadGitaApp = getApplication())) {
             _isInternetConnected.value = true
             getAllChaptersInfo()
         } else {

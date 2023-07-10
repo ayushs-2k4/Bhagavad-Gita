@@ -6,8 +6,8 @@ import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkD
 import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkDatabase
 import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkRepository
 import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.Migrations.MIGRATION_0_1
-import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagvadGitaApi
-import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagvadGitaRepositoryImpl
+import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagavadGitaApi
+import com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository.BhagavadGitaRepositoryImpl
 import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.FakeRepository
 import com.ayushsinghal.bhagavadgita.features.slok.utils.Constants.BASE_URL
 import dagger.Module
@@ -24,18 +24,18 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideBhagvadGitaApi(): BhagvadGitaApi {
+    fun provideBhagavadGitaApi(): BhagavadGitaApi {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(BhagvadGitaApi::class.java)
+            .create(BhagavadGitaApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideBhagvadGitaRepositoryImpl(bhagvadGitaApi: BhagvadGitaApi): BhagvadGitaRepositoryImpl {
-        return BhagvadGitaRepositoryImpl(bhagvadGitaApi = bhagvadGitaApi)
+    fun provideBhagavadGitaRepositoryImpl(bhagavadGitaApi: BhagavadGitaApi): BhagavadGitaRepositoryImpl {
+        return BhagavadGitaRepositoryImpl(bhagavadGitaApi = bhagavadGitaApi)
     }
 
     @Provides

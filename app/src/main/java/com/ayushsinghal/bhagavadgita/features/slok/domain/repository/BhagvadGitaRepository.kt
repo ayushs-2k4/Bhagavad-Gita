@@ -6,7 +6,7 @@ import com.ayushsinghal.bhagavadgita.features.slok.domain.model.slok.SlokModel
 import retrofit2.Response
 import retrofit2.http.Path
 
-interface BhagvadGitaRepository {
+interface BhagavadGitaRepository {
 
     suspend fun getSlok(chapter: Int, verse: Int): Response<SlokModel>
 

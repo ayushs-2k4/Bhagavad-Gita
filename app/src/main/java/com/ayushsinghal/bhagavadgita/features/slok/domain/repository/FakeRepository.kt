@@ -11,7 +11,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 
 
-class FakeRepository : BhagvadGitaRepository {
+class FakeRepository : BhagavadGitaRepository {
     override suspend fun getSlok(chapter: Int, verse: Int): Response<SlokModel> {
         TODO("Not yet implemented")
     }

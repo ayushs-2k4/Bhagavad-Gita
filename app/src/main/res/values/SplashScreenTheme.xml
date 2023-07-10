@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.BhagvadGita.Splash" parent="Theme.SplashScreen">
+    <style name="Theme.BhagavadGita.Splash" parent="Theme.SplashScreen">
 
-        <item name="postSplashScreenTheme">@style/Theme.BhagvadGita</item>
+        <item name="postSplashScreenTheme">@style/Theme.BhagavadGita</item>
     </style>
 
 </resources>

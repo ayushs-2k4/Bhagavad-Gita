@@ -12,7 +12,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.AllChaptersScreenViewModel
 import com.ayushsinghal.bhagavadgita.navigation.Navigation
-import com.ayushsinghal.bhagavadgita.ui.theme.BhagvadGitaTheme
+import com.ayushsinghal.bhagavadgita.ui.theme.BhagavadGitaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            BhagvadGitaTheme {
+            BhagavadGitaTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

@@ -1,21 +1,21 @@
 package com.ayushsinghal.bhagavadgita.features.slok.data.remote.repository
 
-import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagvadGitaApi
+import com.ayushsinghal.bhagavadgita.features.slok.data.remote.BhagavadGitaApi
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.all_chapters.AllChaptersListModel
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.all_chapters.AllChaptersListModelItem
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.chapter.ChapterModel
 import com.ayushsinghal.bhagavadgita.features.slok.domain.model.slok.SlokModel
-import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.BhagvadGitaRepository
+import com.ayushsinghal.bhagavadgita.features.slok.domain.repository.BhagavadGitaRepository
 import com.ayushsinghal.bhagavadgita.features.slok.mapper.AllChaptersInfoMappers
 import com.ayushsinghal.bhagavadgita.features.slok.mapper.ChapterMappers
 import com.ayushsinghal.bhagavadgita.features.slok.mapper.SlokMappers
 import retrofit2.Response
 
-class BhagvadGitaRepositoryImpl(
-    private val bhagvadGitaApi: BhagvadGitaApi
-) : BhagvadGitaRepository {
+class BhagavadGitaRepositoryImpl(
+    private val bhagavadGitaApi: BhagavadGitaApi
+) : BhagavadGitaRepository {
     override suspend fun getSlok(chapter: Int, verse: Int): Response<SlokModel> {
-        val response = bhagvadGitaApi.getSlok(
+        val response = bhagavadGitaApi.getSlok(
             chapter = chapter,
             verse = verse
         )
@@ -57,7 +57,7 @@ class BhagvadGitaRepositoryImpl(
     }
 
     override suspend fun getAllChapterInformation(): Response<AllChaptersListModel> {
-        val response = bhagvadGitaApi.getAllChapterInformation()
+        val response = bhagavadGitaApi.getAllChapterInformation()
 
         val allChaptersInfo = response.body()
 
@@ -91,7 +91,7 @@ class BhagvadGitaRepositoryImpl(
     }
 
     override suspend fun getChapterInformation(chapterNumber: Int): Response<ChapterModel> {
-        val response = bhagvadGitaApi.getChapterInformation(chapterNumber = chapterNumber)
+        val response = bhagavadGitaApi.getChapterInformation(chapterNumber = chapterNumber)
 
         val chapterBody = response.body()
         return if (response.isSuccessful && chapterBody != null) {

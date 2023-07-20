@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -66,6 +68,7 @@ fun ChapterInformationScreen(
         topBar = {
             TopBar(
                 scrollBehavior = scrollBehavior,
+                chapterNumber = chapterNumber.value,
                 chapterName = if (isEnglishSelected) chapterNameEnglish.value else chapterNameHindi.value,
                 onBackButtonPressed = { navController.navigateUp() },
                 onLanguageChangeButtonClicked = { isEnglishSelected = !isEnglishSelected }
@@ -133,6 +136,7 @@ fun OneItem(
 @Composable
 fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
+    chapterNumber: Int,
     chapterName: String,
     onBackButtonPressed: () -> Unit,
     onLanguageChangeButtonClicked: () -> Unit
@@ -140,10 +144,16 @@ fun TopBar(
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
         title = {
-            Text(
-                text = chapterName,
-                style = MaterialTheme.typography.titleLarge
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = chapterNumber.toString())
+                Text(text = " - ")
+                Text(
+                    text = chapterName,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
         },
         navigationIcon = {
             IconButton(onClick = { onBackButtonPressed() }) {

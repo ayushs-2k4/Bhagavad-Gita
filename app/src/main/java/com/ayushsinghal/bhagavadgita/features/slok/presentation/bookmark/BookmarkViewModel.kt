@@ -20,7 +20,7 @@ class BookmarkViewModel @Inject constructor(private val bookmarkRepository: Book
         viewModelScope.launch {
             bookmarkRepository.allBookmarks.collect { savedBookmarks ->
                 _bookmarks.clear()
-                _bookmarks.addAll(savedBookmarks)
+                _bookmarks.addAll(savedBookmarks.reversed())
             }
         }
     }

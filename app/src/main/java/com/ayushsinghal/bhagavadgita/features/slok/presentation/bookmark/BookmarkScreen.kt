@@ -2,14 +2,20 @@ package com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
@@ -29,11 +35,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -64,29 +73,54 @@ fun BookmarkScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding())
-                .padding(horizontal = 10.dp)
-        ) {
-            items(bookmarks.size) {
-                val chapterNumber = bookmarks[it].name.substringBefore(" ").toInt()
-                val slokNumber = bookmarks[it].name.substringAfter(" ").toInt()
-                OneItem(
-                    modifier = if (it == bookmarks.size - 1) {
-                        Modifier.padding(bottom = paddingValues.calculateBottomPadding())
-                    } else {
-                        Modifier
-                    },
-                    chapterNumber = chapterNumber,
-                    slokNumber = slokNumber,
-                    isEnglishSelected = isEnglishSelected,
-                    onClick = { selectedVerseNumber ->
-                        Log.d(TAG, "clicked on verse: $selectedVerseNumber")
-                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${5}&should_show_navigation_buttons=${false}")
-                    }
+        if (bookmarks.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues = paddingValues),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.bookmark_empty),
+                    contentDescription = "Bookmarks",
+                    modifier = Modifier.size(100.dp),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "No saved Slok", fontWeight = FontWeight.Bold)
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(text = "Sloks you save will be stored here")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding())
+                    .padding(horizontal = 10.dp)
+            ) {
+                itemsIndexed(bookmarks) { index, bookmark ->
+                    val chapterNumber = bookmark.name.substringBefore(" ").toInt()
+                    val slokNumber = bookmark.name.substringAfter(" ").toInt()
+                    OneItem(
+                        modifier = if (index == bookmarks.size - 1) {
+                            Modifier.padding(bottom = paddingValues.calculateBottomPadding())
+                        } else {
+                            Modifier
+                        },
+                        chapterNumber = chapterNumber,
+                        slokNumber = slokNumber,
+                        isEnglishSelected = isEnglishSelected,
+                        onClick = { selectedVerseNumber ->
+                            Log.d(TAG, "clicked on verse: $selectedVerseNumber")
+                            navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${5}&should_show_navigation_buttons=${false}")
+                        }
+                    )
+                }
             }
         }
     }

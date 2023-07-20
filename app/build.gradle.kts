@@ -103,7 +103,7 @@ dependencies {
 
 //    Room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.room.ktx)
 

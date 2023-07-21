@@ -1,9 +1,13 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark.BookmarkViewModel
 import com.ayushsinghal.bhagavadgita.navigation.Screen
@@ -158,15 +165,42 @@ fun OneItem(
                     .padding(10.dp)
             )
 
-            IconButton(onClick = { onClickBookmarkButton(slokNumber) }) {
-                Icon(
-                    painter = painterResource(id = if (isBookmarked) R.drawable.bookmark_filled else R.drawable.bookmark_outlined),
-                    contentDescription = null
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(
+                    if (isSystemInDarkTheme()) {
+                        R.raw.bookmark_light_color_animation
+                    } else {
+                        R.raw.bookmark_dark_color_animation
+                    }
                 )
-            }
+            )
+
+            val progress by animateFloatAsState(
+                targetValue = if (isBookmarked) 1f else 0f,
+                animationSpec = tween(durationMillis = 1500, easing = LinearEasing),
+                label = ""
+            )
+
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier
+                    .size(45.dp)
+                    .combinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(
+                            bounded = false,
+                            radius = 40.dp / 2
+                        ),
+                        onClick = {
+                            onClickBookmarkButton(slokNumber)
+                        }
+                    )
+            )
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

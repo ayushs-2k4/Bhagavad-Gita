@@ -1,7 +1,14 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.slok
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,10 +23,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -53,6 +59,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.common.common_screens.LoadingScreen
 import com.ayushsinghal.bhagavadgita.common.common_screens.NoInternetScreen
@@ -229,7 +238,7 @@ fun SlokScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
@@ -258,21 +267,42 @@ fun TopBar(
         },
         actions = {
 
-            IconButton(onClick = { onClickBookmarkButton() }) {
-                if (isBookmarked) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.bookmark_filled),
-                        contentDescription = "Remove Bookmark"
-                    )
-                } else {
-                    Icon(
-                        painter = painterResource(id = R.drawable.bookmark_outlined),
-                        contentDescription = "Add Bookmark"
-                    )
-                }
-            }
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(
+                    if (isSystemInDarkTheme()) {
+                        R.raw.bookmark_light_color_animation
+                    } else {
+                        R.raw.bookmark_dark_color_animation
+                    }
+                )
+            )
 
-            IconButton(onClick = { onClickCopyButton() }) {
+            val progress by animateFloatAsState(
+                targetValue = if (isBookmarked) 1f else 0f,
+                animationSpec = tween(durationMillis = 1500, easing = LinearEasing),
+                label = ""
+            )
+
+            LottieAnimation(
+                composition = composition,
+                progress = { progress },
+                modifier = Modifier
+                    .size(45.dp)
+                    .combinedClickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(
+                            bounded = false,
+                            radius = 40.dp / 2
+                        ),
+                        onClick = {
+                            onClickBookmarkButton()
+                        }
+                    )
+            )
+
+            IconButton(onClick = {
+                onClickCopyButton()
+            }) {
                 Icon(
                     painter = painterResource(id = R.drawable.content_copy),
                     contentDescription = "Copy to Clipboard"

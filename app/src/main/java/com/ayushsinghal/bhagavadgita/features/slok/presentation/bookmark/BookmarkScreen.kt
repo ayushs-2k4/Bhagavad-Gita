@@ -194,7 +194,7 @@ fun BookmarkScreen(
                                     composition = composition,
                                     modifier = Modifier
                                         .align(if (dismissState.dismissDirection == DismissDirection.EndToStart) Alignment.CenterEnd else Alignment.CenterStart)
-                                        .size(50.dp),
+                                        .size(50.dp)
                                 )
                             }
                         },

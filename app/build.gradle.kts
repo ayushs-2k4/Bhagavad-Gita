@@ -90,6 +90,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material3:material3-window-size-class:1.2.0-alpha03")
 
+    implementation(libs.androidx.material)
+
     // Lottie
     implementation(libs.lottie.compose)
 

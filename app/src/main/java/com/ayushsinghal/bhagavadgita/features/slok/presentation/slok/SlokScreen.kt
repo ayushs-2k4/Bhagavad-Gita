@@ -1,5 +1,6 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.slok
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,8 +43,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +67,7 @@ fun SlokScreen(
     slokViewModel: SlokViewModel = hiltViewModel(),
     bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
+    val configuration = LocalConfiguration.current
 
     val slok = remember { slokViewModel.slok }
 
@@ -101,6 +105,13 @@ fun SlokScreen(
                         scrollBehavior = scrollBehavior,
                         title = if (isEnglishSelected) "Chapter ${slok.value!!.chapter} - Verse ${slok.value!!.verse}" else "अध्याय ${slok.value!!.chapter} - श्लोक ${slok.value!!.verse}",
                         isBookmarked = isBookmarked,
+                        titleStyle = TextStyle(
+                            fontSize = if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                                if (isEnglishSelected) 17.sp else 18.sp
+                            } else {
+                                20.sp
+                            }
+                        ),
                         onClickBookmarkButton = {
                             if (isBookmarked) {
                                 bookmarkViewModel.removeBookmark(name = "${slok.value?.chapter!!}" + " " + "${slok.value?.verse!!}")
@@ -224,6 +235,7 @@ fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     title: String,
     isBookmarked: Boolean,
+    titleStyle: TextStyle,
     onClickBookmarkButton: () -> Unit,
     onBackClick: () -> Unit,
     onClickCopyButton: () -> Unit,
@@ -232,7 +244,13 @@ fun TopBar(
 ) {
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior,
-        title = { Text(text = title, fontSize = 20.sp) },
+        title = {
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                style = titleStyle
+            )
+        },
         navigationIcon = {
             IconButton(onClick = { onBackClick() }) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Go back")

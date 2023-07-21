@@ -1,15 +1,11 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark
 
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,17 +16,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FixedThreshold
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.AlertDialog
@@ -47,6 +39,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,17 +48,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
-import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.TAG
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 
 @OptIn(
@@ -78,7 +72,6 @@ fun BookmarkScreen(
     bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
     val bookmarks = bookmarkViewModel.bookmarks
-    val bookmarksState by remember { mutableStateOf(bookmarkViewModel.bookmarks) }
 
     var isEnglishSelected by rememberSaveable { mutableStateOf(false) }
 
@@ -176,17 +169,32 @@ fun BookmarkScreen(
                                     .padding(vertical = 5.dp)
                                     .clip(MaterialTheme.shapes.extraLarge)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = null,
-                                    modifier = if (dismissState.dismissDirection == DismissDirection.EndToStart)
-                                        Modifier
-                                            .align(Alignment.CenterEnd)
-                                            .padding(10.dp)
-                                    else
-                                        Modifier
-                                            .align(Alignment.CenterStart)
-                                            .padding(10.dp)
+                                val threshold = 0.02f
+
+                                val composition by rememberLottieComposition(
+                                    LottieCompositionSpec.RawRes(
+                                        if (isSystemInDarkTheme()) {
+                                            R.raw.bookmark_light_color_animation
+                                        } else {
+                                            R.raw.bookmark_dark_color_animation
+                                        }
+                                    )
+                                )
+
+                                val isPlaying by remember {
+                                    derivedStateOf {
+                                        dismissState.progress.fraction >= threshold
+                                    }
+                                }
+
+                                LottieAnimation(
+                                    isPlaying = isPlaying,
+                                    iterations = 1,
+                                    speed = -1.5f,
+                                    composition = composition,
+                                    modifier = Modifier
+                                        .align(if (dismissState.dismissDirection == DismissDirection.EndToStart) Alignment.CenterEnd else Alignment.CenterStart)
+                                        .size(50.dp),
                                 )
                             }
                         },
@@ -210,10 +218,7 @@ fun BookmarkScreen(
                         directions = setOf(
                             DismissDirection.EndToStart,
                             DismissDirection.StartToEnd
-                        ),
-                        dismissThresholds = {
-                            FixedThreshold(560.dp)
-                        }
+                        )
                     )
                 }
 
@@ -302,5 +307,18 @@ fun OneItem(
 //@Preview
 //@Composable
 //fun BookmarkScreenPreview() {
-//    BookmarkScreen()
+//    BookmarkScreen(
+//        navController = NavController(LocalContext.current)
+//    )
 //}
+
+@Preview
+@Composable
+fun OneItemPreview() {
+    OneItem(
+        chapterNumber = 1,
+        isEnglishSelected = true,
+        onClick = {},
+        slokNumber = 2
+    )
+}

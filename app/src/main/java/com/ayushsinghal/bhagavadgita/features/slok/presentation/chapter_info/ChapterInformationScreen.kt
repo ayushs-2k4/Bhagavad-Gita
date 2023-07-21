@@ -1,6 +1,5 @@
 package com.ayushsinghal.bhagavadgita.features.slok.presentation.chapter_info
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
@@ -42,11 +42,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
-import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.TAG
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark.BookmarkViewModel
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun ChapterInformationScreen(
     navController: NavController,
@@ -87,22 +89,23 @@ fun ChapterInformationScreen(
                 .padding(top = paddingValues.calculateTopPadding())
                 .padding(horizontal = 10.dp)
         ) {
-            items(verseCount.value) {
+            items(verseCount.value) { currentVerse ->
+
                 val isBookmarked = bookmarks.any { bookmark ->
-                    val name = "${chapterNumber.value} ${it + 1}"
+                    val name = "${chapterNumber.value} ${currentVerse + 1}"
                     bookmark.name == name
                 }
+
                 OneItem(
-                    modifier = if (it == verseCount.value - 1) {
+                    modifier = if (currentVerse == verseCount.value - 1) {
                         Modifier.padding(bottom = paddingValues.calculateBottomPadding())
                     } else {
                         Modifier
                     },
-                    slokNumber = it + 1,
+                    slokNumber = currentVerse + 1,
                     isEnglishSelected = isEnglishSelected,
                     isBookmarked = isBookmarked,
                     onClick = { selectedVerseNumber ->
-                        Log.d(TAG, "clicked on verse: $selectedVerseNumber")
                         navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${verseCount.value}&should_show_navigation_buttons=${true}")
                     },
                     onClickBookmarkButton = { slokNumber ->

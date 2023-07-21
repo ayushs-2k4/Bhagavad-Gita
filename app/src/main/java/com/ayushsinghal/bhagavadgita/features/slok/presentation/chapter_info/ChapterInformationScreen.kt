@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,19 +36,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ayushsinghal.bhagavadgita.R
 import com.ayushsinghal.bhagavadgita.features.slok.presentation.all_chapters.TAG
+import com.ayushsinghal.bhagavadgita.features.slok.presentation.bookmark.BookmarkViewModel
 import com.ayushsinghal.bhagavadgita.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChapterInformationScreen(
     navController: NavController,
-    chapterInformationViewModel: ChapterInformationViewModel = hiltViewModel()
+    chapterInformationViewModel: ChapterInformationViewModel = hiltViewModel(),
+    bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -62,6 +66,8 @@ fun ChapterInformationScreen(
     var isEnglishSelected by rememberSaveable {
         mutableStateOf(false)
     }
+
+    val bookmarks = bookmarkViewModel.bookmarks
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -82,6 +88,10 @@ fun ChapterInformationScreen(
                 .padding(horizontal = 10.dp)
         ) {
             items(verseCount.value) {
+                val isBookmarked = bookmarks.any { bookmark ->
+                    val name = "${chapterNumber.value} ${it + 1}"
+                    bookmark.name == name
+                }
                 OneItem(
                     modifier = if (it == verseCount.value - 1) {
                         Modifier.padding(bottom = paddingValues.calculateBottomPadding())
@@ -90,9 +100,16 @@ fun ChapterInformationScreen(
                     },
                     slokNumber = it + 1,
                     isEnglishSelected = isEnglishSelected,
+                    isBookmarked = isBookmarked,
                     onClick = { selectedVerseNumber ->
                         Log.d(TAG, "clicked on verse: $selectedVerseNumber")
                         navController.navigate(Screen.SlokScreen.route + "?chapter_number=${chapterNumber.value}&verse_number=${selectedVerseNumber}&total_slok_count_in_current_chapter=${verseCount.value}&should_show_navigation_buttons=${true}")
+                    },
+                    onClickBookmarkButton = { slokNumber ->
+                        val name = "${chapterNumber.value} $slokNumber"
+                        if (isBookmarked) bookmarkViewModel.removeBookmark(name) else bookmarkViewModel.addBookmark(
+                            name
+                        )
                     }
                 )
             }
@@ -106,7 +123,9 @@ fun OneItem(
     modifier: Modifier = Modifier,
     slokNumber: Int,
     isEnglishSelected: Boolean,
-    onClick: (Int) -> Unit
+    isBookmarked: Boolean,
+    onClick: (Int) -> Unit,
+    onClickBookmarkButton: (Int) -> Unit
 ) {
     OutlinedCard(
         modifier = modifier
@@ -124,11 +143,25 @@ fun OneItem(
                 shape = MaterialTheme.shapes.extraLarge
             )
     ) {
-        Text(
-            text = if (isEnglishSelected) "Verse $slokNumber" else "श्लोक $slokNumber",
-            modifier = Modifier
-                .padding(10.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         )
+        {
+            Text(
+                text = if (isEnglishSelected) "Verse $slokNumber" else "श्लोक $slokNumber",
+                modifier = Modifier
+                    .padding(10.dp)
+            )
+
+            IconButton(onClick = { onClickBookmarkButton(slokNumber) }) {
+                Icon(
+                    painter = painterResource(id = if (isBookmarked) R.drawable.bookmark_filled else R.drawable.bookmark_outlined),
+                    contentDescription = null
+                )
+            }
+        }
     }
 }
 
@@ -169,5 +202,17 @@ fun TopBar(
                 )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun OneItemPreview() {
+    OneItem(
+        isEnglishSelected = false,
+        onClick = {},
+        slokNumber = 1,
+        isBookmarked = true,
+        onClickBookmarkButton = {}
     )
 }

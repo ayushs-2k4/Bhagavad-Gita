@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,6 +35,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -43,6 +47,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,7 +65,10 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ayushsinghal.bhagavadgita.R
+import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.Bookmark
 import com.ayushsinghal.bhagavadgita.navigation.Screen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
@@ -75,9 +83,13 @@ fun BookmarkScreen(
 
     var isEnglishSelected by rememberSaveable { mutableStateOf(false) }
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    val coroutineScope = rememberCoroutineScope()
 
     if (showDeleteDialog) {
         AlertDialog(
@@ -85,6 +97,20 @@ fun BookmarkScreen(
             confirmButton = {
                 Button(onClick = {
                     bookmarkViewModel.removeAllBookmarks()
+
+                    coroutineScope.launch {
+                        val snackBarResult = snackBarHostState.showSnackbar(
+                            message = "All Bookmarks Deleted.",
+                            actionLabel = "Undo"
+                        )
+
+                        when (snackBarResult) {
+                            SnackbarResult.Dismissed -> {}
+                            SnackbarResult.ActionPerformed -> {
+                                bookmarkViewModel.undoDeleteBookmark()
+                            }
+                        }
+                    }
                     showDeleteDialog = false
                 }) {
                     Text(text = "Delete")
@@ -102,6 +128,12 @@ fun BookmarkScreen(
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.imePadding(),
+                hostState = snackBarHostState
+            )
+        },
         topBar = {
             TopBar(
                 scrollBehavior = scrollBehavior,
@@ -149,11 +181,21 @@ fun BookmarkScreen(
                     val dismissState = rememberDismissState(
                         confirmStateChange = {
                             if (it == DismissValue.DismissedToStart) {
-                                bookmarkViewModel.removeBookmark(bookmark.name)
+                                deleteBookmark(
+                                    bookmarkViewModel = bookmarkViewModel,
+                                    bookmark = bookmark,
+                                    coroutineScope = coroutineScope,
+                                    snackBarHostState = snackBarHostState
+                                )
                             }
 
                             if (it == DismissValue.DismissedToEnd) {
-                                bookmarkViewModel.removeBookmark(bookmark.name)
+                                deleteBookmark(
+                                    bookmarkViewModel = bookmarkViewModel,
+                                    bookmark = bookmark,
+                                    coroutineScope = coroutineScope,
+                                    snackBarHostState = snackBarHostState
+                                )
                             }
                             true
                         }
@@ -222,6 +264,30 @@ fun BookmarkScreen(
                     )
                 }
 
+            }
+
+        }
+    }
+}
+
+fun deleteBookmark(
+    bookmarkViewModel: BookmarkViewModel,
+    bookmark: Bookmark,
+    coroutineScope: CoroutineScope,
+    snackBarHostState: SnackbarHostState
+) {
+    bookmarkViewModel.removeBookmark(bookmark.name)
+
+    coroutineScope.launch {
+        val snackBarResult = snackBarHostState.showSnackbar(
+            message = "Bookmark Deleted.",
+            actionLabel = "Undo"
+        )
+
+        when (snackBarResult) {
+            SnackbarResult.Dismissed -> {}
+            SnackbarResult.ActionPerformed -> {
+                bookmarkViewModel.undoDeleteBookmark()
             }
         }
     }
@@ -303,14 +369,6 @@ fun OneItem(
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun BookmarkScreenPreview() {
-//    BookmarkScreen(
-//        navController = NavController(LocalContext.current)
-//    )
-//}
 
 @Preview
 @Composable

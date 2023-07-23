@@ -8,7 +8,6 @@ import com.ayushsinghal.bhagavadgita.features.slok.data.local.bookmark.BookmarkR
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class BookmarkViewModel @Inject constructor(private val bookmarkRepositoryImpl: BookmarkRepositoryImpl) :
@@ -16,6 +15,8 @@ class BookmarkViewModel @Inject constructor(private val bookmarkRepositoryImpl: 
 
     private val _bookmarks = mutableStateListOf<Bookmark>()
     val bookmarks: List<Bookmark> get() = _bookmarks
+
+    private var lastDeletedBookmarks: MutableList<String> = emptyList<String>().toMutableList()
 
     init {
         getAllBookmarks()
@@ -37,6 +38,8 @@ class BookmarkViewModel @Inject constructor(private val bookmarkRepositoryImpl: 
     }
 
     fun removeBookmark(name: String) {
+        lastDeletedBookmarks.clear()
+        lastDeletedBookmarks.add(name)
         viewModelScope.launch {
             bookmarkRepositoryImpl.removeBookmark(name = name)
         }
@@ -44,6 +47,10 @@ class BookmarkViewModel @Inject constructor(private val bookmarkRepositoryImpl: 
     }
 
     fun removeAllBookmarks() {
+        lastDeletedBookmarks.clear()
+        _bookmarks.reversed().forEach {
+            lastDeletedBookmarks.add(it.name)
+        }
         viewModelScope.launch {
             bookmarkRepositoryImpl.removeAllBookmarks()
         }
@@ -54,5 +61,12 @@ class BookmarkViewModel @Inject constructor(private val bookmarkRepositoryImpl: 
         return _bookmarks.any {
             it.name == name
         }
+    }
+
+    fun undoDeleteBookmark() {
+        lastDeletedBookmarks.forEach {
+            addBookmark(it)
+        }
+        lastDeletedBookmarks.clear()
     }
 }

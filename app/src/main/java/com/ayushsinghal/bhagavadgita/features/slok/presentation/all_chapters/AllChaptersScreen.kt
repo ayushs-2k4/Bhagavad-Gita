@@ -76,7 +76,7 @@ fun AllChaptersScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val allChaptersList =
         allChaptersScreenViewModel.allChaptersList.collectAsStateWithLifecycle().value

@@ -63,7 +63,7 @@ fun ChapterInformationScreen(
     bookmarkViewModel: BookmarkViewModel = hiltViewModel()
 ) {
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val chapterNumber = chapterInformationViewModel.chapterNumber.collectAsStateWithLifecycle()
     val verseCount = chapterInformationViewModel.verseCount.collectAsStateWithLifecycle()

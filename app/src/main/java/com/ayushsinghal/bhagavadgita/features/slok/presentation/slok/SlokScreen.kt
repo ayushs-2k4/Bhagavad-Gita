@@ -94,7 +94,7 @@ fun SlokScreen(
     val shouldShowNavigationButtons =
         slokViewModel.shouldShowNavigationButtons.collectAsStateWithLifecycle()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()

@@ -10,6 +10,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -48,6 +49,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -95,6 +99,14 @@ fun SlokScreen(
         slokViewModel.shouldShowNavigationButtons.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                return super.onPreScroll(available, source)
+            }
+        }
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -152,55 +164,93 @@ fun SlokScreen(
                     )
                 }
             ) { paddingValues ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
-                        .padding(horizontal = 20.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TextHeadingDesign(
-                        modifier = Modifier.padding(vertical = 20.dp),
-                        text = if (isEnglishSelected) "Verse" else "श्लोक",
-                        leftImage = R.drawable.left_design,
-                        rightImage = R.drawable.right_design
-                    )
 
-                    SelectionContainer {
-                        Text(text = slok.value!!.slok)
-                    }
-
-                    Spacer(modifier = Modifier.height(50.dp))
-
-                    TextHeadingDesign(
-                        modifier = Modifier.padding(vertical = 20.dp),
-                        text = if (isEnglishSelected) "Translation" else "अनुवाद",
-                        leftImage = R.drawable.left_design,
-                        rightImage = R.drawable.right_design
-                    )
-                    SelectionContainer {
-                        Text(text = if (isEnglishSelected) slok.value!!.siva.et else slok.value!!.rams.ht)
-                    }
-
-                    Spacer(modifier = Modifier.height(50.dp))
-
-                    TextHeadingDesign(
-                        modifier = Modifier.padding(vertical = 20.dp),
-                        text = if (isEnglishSelected) "Explanation\n(by Acharya Raman)" else "आचार्य राम की व्याख्या",
-                        leftImage = R.drawable.left_design,
-                        rightImage = R.drawable.right_design
-                    )
-
-                    SelectionContainer {
-                        Text(
-                            text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc,
-                            modifier = Modifier.padding(bottom = 20.dp)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = paddingValues.calculateTopPadding())
+                            .padding(horizontal = 20.dp)
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TextHeadingDesign(
+                            modifier = Modifier.padding(vertical = 20.dp),
+                            text = if (isEnglishSelected) "Verse" else "श्लोक",
+                            leftImage = R.drawable.left_design,
+                            rightImage = R.drawable.right_design
                         )
+
+                        SelectionContainer {
+                            Text(text = slok.value!!.slok)
+                        }
+
+                        Spacer(modifier = Modifier.height(50.dp))
+
+                        TextHeadingDesign(
+                            modifier = Modifier.padding(vertical = 20.dp),
+                            text = if (isEnglishSelected) "Translation" else "अनुवाद",
+                            leftImage = R.drawable.left_design,
+                            rightImage = R.drawable.right_design
+                        )
+                        SelectionContainer {
+                            Text(text = if (isEnglishSelected) slok.value!!.siva.et else slok.value!!.rams.ht)
+                        }
+
+                        Spacer(modifier = Modifier.height(50.dp))
+
+                        TextHeadingDesign(
+                            modifier = Modifier.padding(vertical = 20.dp),
+                            text = if (isEnglishSelected) "Explanation\n(by Acharya Raman)" else "आचार्य राम की व्याख्या",
+                            leftImage = R.drawable.left_design,
+                            rightImage = R.drawable.right_design
+                        )
+
+                        SelectionContainer {
+                            Text(
+                                text = if (isEnglishSelected) slok.value!!.raman.et else slok.value!!.rams.hc,
+                                modifier = Modifier.padding(bottom = 20.dp)
+                            )
+                        }
+
+//                        if (shouldShowNavigationButtons.value) {
+//                            BottomNavigationRow(
+//                                paddingValues = paddingValues,
+//                                onClickPreviousSlokButton = {
+//                                    if (slok.value!!.verse != 1) {
+//                                        navController.navigateUp()
+//                                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse - 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}&should_show_navigation_buttons=${true}")
+//                                    } else {
+//                                        coroutineScope.launch {
+//                                            snackbarHostState.showSnackbar(
+//                                                message = if (isEnglishSelected) "This is first slok of this chapter" else "यह इस अध्याय का पहला श्लोक है",
+//                                                duration = SnackbarDuration.Short
+//                                            )
+//                                        }
+//                                    }
+//                                },
+//                                onClickNextSlokButton = {
+//                                    if (slok.value!!.verse != totalSlokCountInCurrentChapter.value) {
+//                                        navController.navigateUp()
+//                                        navController.navigate(Screen.SlokScreen.route + "?chapter_number=${slok.value!!.chapter}&verse_number=${slok.value!!.verse + 1}&total_slok_count_in_current_chapter=${totalSlokCountInCurrentChapter.value}&should_show_navigation_buttons=${true}")
+//                                    } else {
+//                                        coroutineScope.launch {
+//                                            snackbarHostState.showSnackbar(
+//                                                message = if (isEnglishSelected) "This is last slok of this chapter" else "यह इस अध्याय का अंतिम श्लोक है",
+//                                                duration = SnackbarDuration.Short
+//                                            )
+//                                        }
+//                                    }
+//                                }
+//                            )
+//                        }
                     }
 
                     if (shouldShowNavigationButtons.value) {
                         BottomNavigationRow(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 10.dp),
                             paddingValues = paddingValues,
                             onClickPreviousSlokButton = {
                                 if (slok.value!!.verse != 1) {
@@ -229,6 +279,7 @@ fun SlokScreen(
                                 }
                             }
                         )
+
                     }
                 }
             }
@@ -356,12 +407,13 @@ fun TextHeadingDesign(
 
 @Composable
 fun BottomNavigationRow(
+    modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
     onClickPreviousSlokButton: () -> Unit,
     onClickNextSlokButton: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = paddingValues.calculateBottomPadding())
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
